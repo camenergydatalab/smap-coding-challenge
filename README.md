@@ -9,18 +9,29 @@ We estimate that this can be done in less than half a day but there is no time l
 
 ### The challenge
 
+#### Background
+
 We have a small dataset of users (in `data/consumption/user_data.csv`) and their electricity smart meters (in `data/consumption/<user_id>.csv`).  We want to help an energy provider view and analyse this data. One of the ways we do this is to visualise aggregated data (e.g. total consumption or average consumption) in a chart. We also want to show a list of users in a table.
 
-This challenge requires you to read the data (explained in full below) and then visualise it on a summary page. The summary page should contain at least one visualisation of the data and a table of user data (ID, area etc.)
+#### Objectives
 
-Optionally, you may add a detail page containing an individual user's data.
+We have created a basic Django site, the challenge is for you to implement a small analysis application with the following features:
+
+* Components to read and store user data and consumption data
+* Implementation of an aggregation for consumption data (e.g. total/average)
+* Complete the `summary` view in `dashboard/consumption/views.py` and frontend code in `dashboard/consumption/templates/consumption/summary.html`
+  * This page should contain at least one chart and one table
+* (optional) Implement the `detail` view
+  * This page should contain data for an individual consumer
+
+The site (`dashboard`) includes one app (`consumption`). This is where you will implement your solution (you may also add additional apps if required). The Django app is configured with a sqlite DB for you to use.
 
 Please document any technical decisions, trade-offs, problems etc. in `REPORT.md`
 
 ### The data
 
 * `data/user_data.csv`
- * A file containing user data
+  * A file containing user data
 
 id | area | tariff
 ---|------|-------
@@ -30,7 +41,7 @@ id | area | tariff
 ... | ... | ...
 
 * `data/consumption/<user_id>.csv`
- * A file containing energy consumption (in Wh) in 30 minute intervals
+  * A file containing energy consumption (in Wh) in 30 minute intervals
 
 datetime | consumption
 ---------|------------
@@ -44,15 +55,13 @@ datetime | consumption
 * Python 2.7
 * Django 1.9
 
-We have created a basic Django site (`dashboard`) with one app (`consumption`). It is configured to use a sqlite DB. The views and templates you will work on are in the `consumption` app.
-
 To work on the challenge, please fork this repository or download it. After you have finished, you can send us a link to the fork or simply zip the repository and email it to us.
 
 ### Questions?
 
 Please ask us! If something doesn't work or you have a question about the data, get in touch and we will help.
 
-### What happens after you finish the challenge?
+### What happens after the challenge?
 
 We will review it and then get back to you as soon as possible. We appreciate the time it takes to do this and we will provide feedback.
 
@@ -66,5 +75,5 @@ We will assess the following aspects:
 * **Correctness**: Does the application do what was asked? If there is anything missing, was it documented and explained? (in `REPORT.md`)
 * **Code quality**: Is the code easy to understand? Is it maintainable? Could we deploy it in production?
 * **Testing**: How thorough are the tests?
- * Full coverage is not essential, we just want to get an idea of your testing skills
+  * Full coverage is not essential, we just want to get an idea of your testing skills
 * **UI/UX**: Is the interface easy to understand and easy to use?
