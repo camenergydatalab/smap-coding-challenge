@@ -76,4 +76,3 @@ We will assess the following aspects:
 * **Code quality**: Is the code easy to understand? Is it maintainable? Could we deploy it in production?
 * **Testing**: How thorough are the tests?
   * Full coverage is not essential, we just want to get an idea of your testing skills
-* **UI/UX**: Is the interface easy to understand and easy to use?
