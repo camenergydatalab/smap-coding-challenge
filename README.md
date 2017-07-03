@@ -21,8 +21,10 @@ We have created a basic Django site, the challenge is for you to implement a sma
 * Implementation of an aggregation for consumption data (e.g. total/average)
 * Complete the `summary` view in `dashboard/consumption/views.py` and frontend code in `dashboard/consumption/templates/consumption/summary.html`
   * This page should contain at least one chart and one table
+  * For instance a line chart showing the total consumption (aggregation of all users) and a table listing all users.
 * (optional) Implement the `detail` view
   * This page should contain data for an individual consumer
+  * For instance a line chart showing the consumption of an individual consumer, and a list of fields such as tariff, area, etc ...
 
 The site (`dashboard`) includes one app (`consumption`). This is where you will implement your solution (you may also add additional apps if required). The Django app is configured with a sqlite DB for you to use.
 
