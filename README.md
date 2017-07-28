@@ -18,6 +18,8 @@ We have a small dataset of users (in `data/consumption/user_data.csv`) and their
 We have created a basic Django site, the challenge is for you to implement a small analysis application with the following features:
 
 * Components to read and store user data and consumption data
+  * Implement the command in `dashboard/consumption/management/commands/import.py`
+  * This can be executed by running `python manage.py import` in the terminal
 * Implementation of an aggregation for consumption data (e.g. total/average)
 * Complete the `summary` view in `dashboard/consumption/views.py` and frontend code in `dashboard/consumption/templates/consumption/summary.html`
   * This page should contain at least one chart and one table
@@ -29,6 +31,8 @@ We have created a basic Django site, the challenge is for you to implement a sma
 The site (`dashboard`) includes one app (`consumption`). This is where you will implement your solution (you may also add additional apps if required). The Django app is configured with a sqlite DB for you to use.
 
 Please document any technical decisions, trade-offs, problems etc. in `REPORT.md`
+
+If you have added any python packages, please add them to `requirements.txt`
 
 ### The data
 
