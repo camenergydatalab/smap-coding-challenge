@@ -11,7 +11,7 @@ We estimate that this can be done in less than half a day but there is no time l
 
 #### Background
 
-We have a small dataset of users (in `data/consumption/user_data.csv`) and their electricity smart meters (in `data/consumption/<user_id>.csv`).  We want to help an energy provider view and analyse this data. One of the ways we do this is to visualise aggregated data (e.g. total consumption or average consumption) in a chart. We also want to show a list of users in a table.
+We have a small dataset of users (in `data/user_data.csv`) and their electricity smart meters (in `data/consumption/<user_id>.csv`).  We want to help an energy provider view and analyse this data. One of the ways we do this is to visualise aggregated data (e.g. total consumption or average consumption) in a chart. We also want to show a list of users in a table.
 
 #### Objectives
 
