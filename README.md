@@ -58,7 +58,7 @@ datetime | consumption
 
 ### Development environment
 
-* Python 2.7
+* Python 3.6 or later
 * Django 1.11
 
 To work on the challenge, please fork this repository or download it. After you have finished, you can send us a link to the fork or simply zip the repository and email it to us.
