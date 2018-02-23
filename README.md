@@ -30,7 +30,7 @@ We have created a basic Django site, the challenge is for you to implement a sma
 
 The site (`dashboard`) includes one app (`consumption`). This is where you will implement your solution (you may also add additional apps if required). The Django app is configured with a sqlite DB for you to use.
 
-Please document any technical decisions, trade-offs, problems etc. in `REPORT.md`
+Please document any technical decisions, trade-offs, problems etc. in `REPORT.md` in English.
 
 If you have added any python packages, please add them to `requirements.txt`
 
