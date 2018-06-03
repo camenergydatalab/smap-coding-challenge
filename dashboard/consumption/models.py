@@ -12,5 +12,5 @@ class User(models.Model):
 class Consumption(models.Model):
     user = models.ForeignKey(User)
     datetime = models.DateTimeField(default=datetime.now)
-    consumption = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    consumption = models.DecimalField(max_digits=6, decimal_places=2, null=True)
 # Create your models here.
