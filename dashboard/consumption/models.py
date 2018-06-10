@@ -37,11 +37,11 @@ class Consumption(models.Model):
             'consumption': self.consumption
         })
 
-    def year(self):
-        return self.datetime.year
-
-    def month(self):
-        return self.datetime.month
-
-
-# Create your models here.
+    @classmethod
+    def aggregated_consumptions_by_area(cls, agg_type='Avg'):
+        return Consumption.objects.all().extra(select={
+            'year': "date_part('year', datetime)::int",
+            'month': "date_part('month', datetime)::int"
+        }).values('user__area', 'year', 'month').annotate(
+            eval("{}('consumption')".format(agg_type))
+        ).order_by('year', 'month')

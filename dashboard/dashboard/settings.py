@@ -124,4 +124,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", 'development')
-INSTALLED_APPS += ('django_extensions', )
+INSTALLED_APPS += (
+    'django_extensions',
+    'rest_framework',
+)
