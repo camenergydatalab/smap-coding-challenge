@@ -2,6 +2,30 @@
 
 {% block content %}
 
-<h1>{{message}}</h1>
+<h1>サマリ</h1>
+<table border>
+  <tr>
+    <th rowspan="2">ユーザーid</th>
+    {% for agg in users.first.aggregated_consumptions %}
+      <th colspan="4">{{ agg.year|floatformat:"0" }}年{{ agg.month|floatformat:"0" }}月</th>
+    {% endfor %}
+  </tr>
+  <tr>
+    {% for agg in users.first.aggregated_consumptions %}
+    <th>合計</th><th>最大</th><th>平均</th><th>件数</th>
+    {% endfor %}
+  </tr>
 
+  {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      {% for agg in user.aggregated_consumptions %}
+        <td>{{ agg.sum|floatformat:"0" }}</td>
+        <td>{{ agg.max|floatformat:"0" }}</td>
+        <td>{{ agg.average|floatformat:"2" }}</td>
+        <td>{{ agg.count }}</td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
 {% endblock %}
