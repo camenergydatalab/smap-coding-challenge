@@ -1,10 +1,11 @@
-from rest_framework import serializers, status
+import time
+import random
+
+from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from django.shortcuts import render
 from api.models import Consumer, MonthlyStatistics
-
 
 class ConsumerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,5 +85,9 @@ class MonthlyStatisticsApi(APIView):
         stats = MonthlyStatistics.objects.filter(**filters)
 
         serializer = MonthlyStatisticsSerializer(stats, many=True)
+
+        # This simulates slow response api. Please do not remove it.
+        t = random.choice(range(6, 12))
+        time.sleep(t)
 
         return Response(serializer.data)
