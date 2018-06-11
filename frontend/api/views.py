@@ -57,7 +57,7 @@ class ConsumerDetail(APIView):
         if consumer:
             return Response(dict(success=True))
 
-        return Response(dict(sucess=False))
+        return Response(dict(sucess=False, message='Consumer was not created.'))
 
     def delete(self, request, consumer_id):
         consumer = Consumer.objects.get(pk=consumer_id)
@@ -65,7 +65,7 @@ class ConsumerDetail(APIView):
         if consumer:
             consumer.delete()
             return Response(dict(success=True))
-        return Response(dict(success=False))
+        return Response(dict(success=False, message='No consumer with that id.'))
 
 
 class MonthlyStatisticsApi(APIView):
