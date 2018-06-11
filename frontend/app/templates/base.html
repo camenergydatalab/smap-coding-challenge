@@ -1,0 +1,12 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        {% block content %}{% endblock content %}
+
+        <script src="{% static 'js/app.js' %}"></script>
+    </body>
+</html>
