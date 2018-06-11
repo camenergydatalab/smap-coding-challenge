@@ -7,7 +7,7 @@ As part of the SMAP interview process, we are asking you to work on a small codi
 
 We estimate that this can be done in less than half a day but there is no time limit.
 
-### The challenge
+### The Full Stack Challenge
 
 #### Background
 
@@ -62,6 +62,34 @@ datetime | consumption
 * Django 1.11
 
 To work on the challenge, please fork this repository or download it. After you have finished, you can send us a link to the fork or simply zip the repository and email it to us.
+
+
+### The Frontend Challenge
+The frontend challenge is in the project folder `frontend`. To be able to use apis you have to setup the dev environment:
+* Create the dev environment with `virualenv venv`.
+* Activate environment: `source venv/bin/activate`.
+* Install requirements: `pip install -r requirements.txt`.
+
+After setup, move to frontend project (`cd frontend`) and run web server with `python manage.py runserver`. If you visit the browser at `http://localhost:8000` you will have to see a page with title **Frontend challenge.**
+
+For the purpose of challenge, we prepared several apis you should use:
+* `api/consumers` will return the list of all consumers;
+* `api/consumers/<low|high|extra_high>` will return consumers of certaint type (low voltage, high voltage, extra high voltage);
+* `api/consumer/<consumer_id>` will return a particular consumer (GET) or delete (DELETE) a consumer;
+* `api/consumer` with POST request will create a new consumer;
+* `api/monthly_statistics/<consumer_id>` will return a monthly statistics of a particular consumer with consumption, total_bill and total_cost data points. If you specify year param as: `api/monthly_statistics/<consumer_id>?year=2017` the api returns filtered results by year. There are only 2016 and 2017 available.
+* 
+
+#### Objectives
+The basic template files are in `frontend/app/templates/`. There is a `base.html` file which serves as a base template and `index.html` file, which is served as and index file. You can put static files in `frontend/app/static` folder. You can see how to include it in the django templates in `frontend/app/templates/base.html`.
+
+* Create a reusable Vue component for displaying a list of consumers and filtering by consumer types. There should be an option of deleting and adding a consumer.
+* Create a reusable Vue component for displaying a particular consumer, which includes a chart of Monthly Statistics data (consumption, total bill, total cost and calculated profit per month). This component should also implement filtering of the consumer data by year. 
+* We are happy to see modern JS bundlers such as webpack or browserify.
+* The site should be cross browser compatible and mobile ready. You can use any css framework you want.
+* BONUS: frontend tests.
+
+
 
 ### Questions?
 
