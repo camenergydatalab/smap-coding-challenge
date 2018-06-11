@@ -4,7 +4,7 @@ from api.models import Consumer, MonthlyStatistics
 
 
 class Command(BaseCommand):
-    help = 'add Japanese public holidays'
+    help = "Create dataset. Please do no run that command if you haven't drink SMAP coffee yet." 
 
     def handle(self, *args, **options):
         first_names = [
@@ -17,7 +17,7 @@ class Command(BaseCommand):
             'Arnold', 'Avery', 'Baker', 'Bell', 'Bond', 'Carr', 'Clark', 'Davis', 'Duncan', 'Glover',
             'Gibson', 'Hamilton', 'Hart', 'Jackson', 'Jones', 'Kerr', 'King', 'Miller', 'Nash', 'Nolan',
             'Oliver', 'Page', 'Piper', 'Rees', 'Short', 'Skinner', 'Taylor', 'Watson', 'Young', 'Martin',
-            'May', 'Know', 'Lewis', 'Lee', 'Gray', 'Clinton', 'Dyer', 'Cameron', 'Butler', 'Walsh', 'Wallace'
+            'May', 'Know', 'Lewis', 'Lee', 'Grey', 'Clinton', 'Dyer', 'Cameron', 'Butler', 'Walsh', 'Wallace'
         ]
 
         for i in range(0, 60):

@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
 class Consumer(models.Model):
     UNKNOWN = 'unknown'
     LOW_VOLTAGE = 'low'
