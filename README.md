@@ -89,7 +89,7 @@ We prepared two static files for you:
 * `frontend/app/statics/js/app.js` for custom js.
 This files are already included in `base.html**. You can use them or include other files. If you free to use any other frontend technology and document it in REPORT.
 
-**TASKS***
+**TASKS**
 * Include CSS framework or create your own stylesheet. We would love to see some unique design touch.
 * Create a reusable Vue component for displaying a list of consumers and filtering by consumer types. There should be an option of deleting and adding a consumer.
 * Create a reusable Vue component for displaying a particular consumer, which includes a chart of Monthly Statistics data (consumption, total bill, total cost and calculated profit per month). This component should also implement filtering of the consumer data by year. There should be also total profit for a particular year or both years together (based on selection).
