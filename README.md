@@ -65,33 +65,35 @@ To work on the challenge, please fork this repository or download it. After you 
 
 
 ## The Frontend Challenge
-The frontend challenge is in the project folder `frontend`. To be able to use apis you have to setup the dev environment:
+#### Setup
+The frontend challenge is located in the project folder `frontend`. To be able to use APIs you have to setup the dev environment:
 * Create the dev environment with `virualenv venv`.
 * Activate environment: `source venv/bin/activate`.
 * Install requirements: `pip install -r requirements.txt`.
 
-After setup, move to frontend project (`cd frontend`) and run web server with `python manage.py runserver`. If you visit the browser at `http://localhost:8000` you will have to see a page with title **Frontend challenge.**
+After setup, please move to frontend folder (`cd frontend`) and run web server with `python manage.py runserver`. 
+
+If you visit the browser at `http://localhost:8000` you will have to see a page with title **Frontend challenge.**
 
 For the purpose of challenge, we prepared several apis you should use:
 * `api/consumers` will return the list of all consumers;
-* `api/consumers/<low|high|extra_high>` will return consumers of certaint type (low voltage, high voltage, extra high voltage);
+* `api/consumers/<low|high|extra_high>` will return consumers of certain type (low voltage, high voltage, extra high voltage);
 * `api/consumer/<consumer_id>` will return a particular consumer (GET) or delete (DELETE) a consumer;
-* `api/consumer` with POST request will create a new consumer;
-* `api/monthly_statistics/<consumer_id>` will return a monthly statistics of a particular consumer with consumption, total_bill and total_cost data points. If you specify year param as: `api/monthly_statistics/<consumer_id>?year=2017` the api returns filtered results by year. There are only 2016 and 2017 available.
-* 
+* a POST request with params `name` and `consumer_type` to  `api/consumer` will create a new consumer;
+* `api/monthly_statistics/<consumer_id>` will return a monthly statistics of a particular consumer with consumption, total_bill and total_cost data points. If you specify year param as: `api/monthly_statistics/<consumer_id>?year=2017` the api returns filtered results by year. The data contains 2016 and 2017. 
 
 #### Objectives
 The basic template files are in `frontend/app/templates/`. There is a `base.html` file which serves as a base template and `index.html` file, which is served as and index file. You can put static files in `frontend/app/static` folder. You can see how to include it in the django templates in `frontend/app/templates/base.html`.
 
 * Create a reusable Vue component for displaying a list of consumers and filtering by consumer types. There should be an option of deleting and adding a consumer.
-* Create a reusable Vue component for displaying a particular consumer, which includes a chart of Monthly Statistics data (consumption, total bill, total cost and calculated profit per month). This component should also implement filtering of the consumer data by year. 
-* We are happy to see modern JS bundlers such as webpack or browserify.
+* Create a reusable Vue component for displaying a particular consumer, which includes a chart of Monthly Statistics data (consumption, total bill, total cost and calculated profit per month). This component should also implement filtering of the consumer data by year. There should be also total profit for a particular year or both years together (based on selection).
+* We are happy to see JS bundlers such as webpack or browserify and single file Vue components.
 * The site should be cross browser compatible and mobile ready. You can use any css framework you want.
 * BONUS: frontend tests.
 
 
 
-### Questions?
+## Questions?
 
 Please ask us! If something doesn't work or you have a question about the data, get in touch and we will help.
 
