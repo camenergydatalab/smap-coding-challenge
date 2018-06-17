@@ -1,8 +1,13 @@
 {% extends 'consumption/layout.html' %}
+{% load static %}
 
 {% block content %}
 
 <h1>サマリ</h1>
+
+<div id="summary">
+</div>
+
 <table border>
   <tr>
     <th rowspan="2">ユーザーid</th>
@@ -29,3 +34,9 @@
   {% endfor %}
 </table>
 {% endblock %}
+
+{% block local_script %}
+  <link rel="stylesheet" href="{% static 'consumption/packed/summary.css' %}"/>
+  <script src="{% static 'consumption/packed/summary.js' %}"></script>
+{% endblock %}
+
