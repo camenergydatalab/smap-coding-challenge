@@ -1,6 +1,7 @@
-var VueLoaderPlugin = require('vue-loader/lib/plugin')
-var webpack = require('webpack');
-var path = require('path')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const webpack = require('webpack')
+const path = require('path')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env, argv) => {
   const mode = !!argv && !!argv.mode ? argv.mode : env
@@ -33,13 +34,20 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }),
-      new VueLoaderPlugin()
+      new VueLoaderPlugin(),
+      new MiniCssExtractPlugin({
+        filename: "[name].css",
+      }),
     ],
     module: {
       rules: [
         {test: /\.js$/, exclude: /node_modules/, use: ['babel-loader', 'eslint-loader']},
         {test: /\.vue$/, use: ['vue-loader', 'eslint-loader']},
-      ]
+        {
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader']
+        },
+      ],
     },
     resolve: {
       alias: {
