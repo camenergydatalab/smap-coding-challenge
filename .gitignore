@@ -87,3 +87,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Ignore node_modules
+node_modules
+
+**/packed/**/*
