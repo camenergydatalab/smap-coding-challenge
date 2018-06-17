@@ -26,7 +26,7 @@ module.exports = (env, argv) => {
   return {
     devtool: devtool,
     entry: {
-      'consumption/static/consumption/packed/js/summary': './src/consumption/summary',
+      'consumption/static/consumption/packed/summary': './src/consumption/summary',
     },
     output: {
       path: path.resolve(__dirname, '../'),
