@@ -38,10 +38,10 @@ class Consumption(models.Model):
         })
 
     @classmethod
-    def aggregated_consumptions_by_area(cls, agg_type='Avg'):
+    def aggregated_consumptions_by_area(cls, agg_type='Sum'):
         return Consumption.objects.all().extra(select={
             'year': "date_part('year', datetime)::int",
             'month': "date_part('month', datetime)::int"
         }).values('user__area', 'year', 'month').annotate(
-            eval("{}('consumption')".format(agg_type))
+            eval("{}('consumption')".format(agg_type.capitalize()))
         ).order_by('year', 'month')
