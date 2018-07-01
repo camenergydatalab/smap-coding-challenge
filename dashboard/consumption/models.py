@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.db.models import Sum, Max, Avg, Count
+from django.db.models import Sum, Max, Avg, Count, F
 from datetime import datetime
 
 class User(models.Model):
@@ -39,9 +39,13 @@ class Consumption(models.Model):
 
     @classmethod
     def aggregated_consumptions_by_area(cls, agg_type='Sum'):
+        agg_type = agg_type.capitalize()
+        st = "{}(F('consumption') / {})".format(agg_type, 1 if agg_type == 'Sum' else 1)
         return Consumption.objects.all().extra(select={
             'year': "date_part('year', datetime)::int",
             'month': "date_part('month', datetime)::int"
         }).values('user__area', 'year', 'month').annotate(
-            eval("{}('consumption')".format(agg_type.capitalize()))
+            user_count=Count('user_id', distinct=True),
+            agg_consumption=eval(st),
+            cc=Count('consumption'),
         ).order_by('year', 'month')

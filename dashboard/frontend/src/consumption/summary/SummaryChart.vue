@@ -4,6 +4,7 @@
       <option value="sum">合計</option>
       <option value="max">最大</option>
       <option value="avg">平均</option>
+      <option value="sum__per_user">合計（一人当たり）</option>
     </select>
     <Chart
       :c3-obj="c3Obj"/>
