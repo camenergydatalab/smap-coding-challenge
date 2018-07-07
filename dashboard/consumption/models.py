@@ -40,7 +40,7 @@ class Consumption(models.Model):
     @classmethod
     def aggregated_consumptions_by_area(cls, agg_type='Sum', timezone='UTC'):
         agg_type = agg_type.capitalize()
-        st = "{}(F('consumption') / {})".format(agg_type, 1 if agg_type == 'Sum' else 1)
+        st = "{}(F('consumption') / {})".format(agg_type, 1000 if agg_type == 'Sum' else 1)
         agg_consumptions = Consumption.objects.all().extra(select={
             'year': "date_part('year', datetime AT TIME ZONE '{}')::int".format(timezone),
             'month': "date_part('month', datetime AT TIME ZONE '{}')::int".format(timezone)
