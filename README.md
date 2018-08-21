@@ -109,7 +109,7 @@ We will review it and then get back to you as soon as possible. We appreciate th
 
 #### How we review
 
-**We value code quality more than the number of features**. If anything has been left out, please leave a comment in `REPORT.md` so that we know.
+**We value code quality more than the number of features**. Please document which browser(s) you used to check your work, as well as any technical decisions, trade-offs, problems etc. in `REPORT.md` in English. If anything has been left out, please also leave a comment in `REPORT.md` so that we know.
 
 We will assess the following aspects:
 
