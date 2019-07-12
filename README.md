@@ -7,7 +7,7 @@ As part of the SMAP interview process, we are asking you to work on a small codi
 
 We estimate that this can be done in less than half a day but there is no time limit.
 
-## The Full Stack Challenge
+## Challenge 1 - The Full Stack Challenge
 
 #### Background
 
@@ -64,7 +64,7 @@ datetime | consumption
 To work on the challenge, please fork this repository or download it. After you have finished, you can send us a link to the fork or simply zip the repository and email it to us.
 
 
-## The Frontend Challenge
+## Challenge 2 - The Frontend Challenge
 #### Setup
 The frontend challenge is located in the project folder `frontend`. To be able to use APIs you have to setup the dev environment:
 * Create the dev python3 environment with `virtualenv -p python3 venv`.
