@@ -2,6 +2,8 @@
 
 <h1>{{ subject_name }}</h1>
 
+<h2>Line Chart of Total Consumption</h2>
+
 <canvas id="consumptionChart"></canvas>
 <script type="text/javascript">
   var ctx = document.getElementById("consumptionChart");
@@ -21,19 +23,25 @@
   });
 </script>
 
+<h2>Userlist</h2>
+
 <table border="1">
   <tr>
     <th>user_id</th>
+    <th>area</th>
+    <th>tariff</th>
     <th>total</th>
     <th>average</th>
   </tr>
   {% for item in object_list %}
   <tr>
     <td>
-      <a href="#">{{ item.user_id }}</a>
+      <a href="/detail/{{ item.id }}">{{ item.user_id }}</a>
     </td>
-    <td>{{ item.consumption_total }}</td>
-    <td>{{ item.consumption_avg }}</td>
+    <td>{{ item.area }}</td>
+    <td>{{ item.tariff }}</td>
+    <td>{{ item.consumption_total | floatformat }}</td>
+    <td>{{ item.consumption_avg | floatformat }}</td>
   </tr>
   {% endfor %}
 </table>

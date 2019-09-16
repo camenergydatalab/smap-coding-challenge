@@ -13,6 +13,9 @@ class UserReport(models.Model):
     consumption_total = models.FloatField(default=0)
     consumption_avg = models.FloatField(default=0)
 
+    class Meta:
+        ordering = ["user_id"]
+
     def __str__(self):
         return self.user_id
 
