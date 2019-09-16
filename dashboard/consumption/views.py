@@ -41,9 +41,7 @@ class UserDetailView(DetailView):
         context["consumption_label"] = "consumption_data"
 
         pk = os.path.basename(self.request.path)
-        print(pk)
         user_id = self.model.objects.get(pk=pk)
-        print(user_id)
         data_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data")
         data_path = os.path.join(data_dir, "consumption", f"{user_id}.csv")
         df = pd.read_csv(data_path, index_col="datetime")

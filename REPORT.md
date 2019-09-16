@@ -11,3 +11,4 @@ Time-series data of consumption is too big. Because I fear database bloat, I ado
 - think how to add data
   - make batch script to combine csv files
   - use NoSQL database such as AWS DynamoDB
+- make unittest
