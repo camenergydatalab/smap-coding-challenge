@@ -1,7 +1,41 @@
-{% extends 'consumption/layout.html' %}
+{% extends 'consumption/layout.html' %} {% block content %}
 
-{% block content %}
+<h1>{{ subject_name }}</h1>
 
-<h1>{{message}}</h1>
+<canvas id="consumptionChart"></canvas>
+<script type="text/javascript">
+  var ctx = document.getElementById("consumptionChart");
+
+  var myRadarChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: {{ chart_labels | safe }},
+      datasets: [
+        {
+          label: "{{ total_consumption_label }}",
+          data: {{ chart_data }},
+          pointRadius: 0
+        }
+      ]
+    }
+  });
+</script>
+
+<table border="1">
+  <tr>
+    <th>user_id</th>
+    <th>total</th>
+    <th>average</th>
+  </tr>
+  {% for item in object_list %}
+  <tr>
+    <td>
+      <a href="#">{{ item.user_id }}</a>
+    </td>
+    <td>{{ item.consumption_total }}</td>
+    <td>{{ item.consumption_avg }}</td>
+  </tr>
+  {% endfor %}
+</table>
 
 {% endblock %}
