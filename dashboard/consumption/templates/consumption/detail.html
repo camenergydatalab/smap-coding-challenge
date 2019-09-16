@@ -1,5 +1,33 @@
-{% extends 'consumption/layout.html' %}
+{% extends 'consumption/layout.html' %} {% block content %}
 
-{% block content %}
+<h1>{{ object.user_id }}'s consumption data</h1>
+<h2>consumption line chart</h2>
+<canvas id="consumptionChart"></canvas>
+<script type="text/javascript">
+  var ctx = document.getElementById("consumptionChart");
+
+  var myRadarChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: {{ chart_labels | safe }},
+      datasets: [
+        {
+          label: "{{ consumption_label }}",
+          data: {{ chart_data }},
+          pointRadius: 0
+        }
+      ]
+    }
+  });
+</script>
+
+<h2>basic data</h2>
+<ul>
+  <li>user_id: {{ object.user_id }}</li>
+  <li>area: {{ object.area }}</li>
+  <li>tariff: {{ object.tariff }}</li>
+  <li>total_consumption: {{ object.consumption_total | floatformat }}</li>
+  <li>average_consumption: {{ object.consumption_avg | floatformat }}</li>
+</ul>
 
 {% endblock %}
