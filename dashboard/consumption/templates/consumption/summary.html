@@ -2,11 +2,10 @@
 
 {% block content %}
 
-<h1>{{message}}</h1>
+<h1></h1>
 <body>
     <div id="app">
         <v-app id="inspire"> 
-            {{ data.datetime}}
             <canvas id="totalchart"></canvas>
             <canvas id="averagechart"></canvas>
             <v-container>
@@ -34,6 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         var vm= new Vue({
             delimiters: ['[[',']]'],
@@ -50,10 +50,14 @@
           methods:{
             createChart: function(){
                 var totalCtx = document.getElementById("totalchart").getContext("2d")
+                var datetime = []
+                "{% for d in data.datetime %}"
+                datetime.push("{{ d }}")
+                "{% endfor %}"
                 var totalConfig = {
                     type:"line",
                     data:{
-                        labels:"{{ data.datetime }}".split(","),
+                        labels:datetime,
                         datasets:[
                             {
                                 label: "total",
@@ -64,11 +68,10 @@
                     }
                 }
                 var averageCtx = document.getElementById("averagechart").getContext("2d")
-                console.log("{{ data.average }}".split(","))
                 var averageConfig = {
                     type:"line",
                     data:{
-                        labels:"{{ data.datetime }}".split(","),
+                        labels:datetime,
                         datasets:[
                             {
                                 label: "average",
