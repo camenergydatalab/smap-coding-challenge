@@ -4,7 +4,38 @@
 
 <h1>{{message}}</h1>
 <body>
-    <img src="{{ graph }}">
+    <div id="app">
+        <v-container>
+            <img src="{{ graph }}">
+            <div>[[ data ]]</div>
+            <div>{{ data }}</div>
+            <v-data-table
+                :headers="headers"
+                :items="{{ data }}"
+
+            ></v-data-table>
+        </v-container>
+    </div>
+    
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script>
+        var vm= new Vue({
+            delimiters: ['[[',']]'],
+            el: '#app',
+            vuetify: new Vuetify(),
+            data:{
+              data:[],
+              headers:[
+                  {text:"datatime",value:"datetime"},
+                  {text:"average", value:"average"}
+              ]
+          },
+        })
+      </script>
 </body>
 
 {% endblock %}
