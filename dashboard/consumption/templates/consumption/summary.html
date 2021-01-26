@@ -6,8 +6,7 @@
 <body>
     <div id="app">
         <v-app id="inspire"> 
-            <!-- <canvas id="totalchart"></canvas> -->
-            <div id="totalchart"></div>
+            <canvas id="totalchart"></canvas>
             <canvas id="averagechart"></canvas>
             <v-container>
                 <v-card>
@@ -50,25 +49,23 @@
           },
           methods:{
             createChart: function(){
-                var totalCtx = document.querySelector("#totalchart")
+                var totalCtx = document.getElementById("totalchart").getContext("2d")
                 var datetime = []
                 "{% for d in data.datetime %}"
                 datetime.push("{{ d }}")
                 "{% endfor %}"
                 var totalConfig = {
-                    chart:{
-                        type:"line",
-                    },
-                    series:[
-                        {
-                            name: "total",
-                            data:"{{ data.total }}".split(","),
-                        }
-                    ],
-                    xaxis:{
-                        categories:datetime,
-                    },
-                    
+                    type:"line",
+                    data:{
+                        labels:datetime,
+                        datasets:[
+                            {
+                                label: "total",
+                                data:"{{ data.total }}".split(","),
+                                backgroundColor:"rgba(255,153,0,0.4)"
+                            }
+                        ]
+                    }
                 }
                 var averageCtx = document.getElementById("averagechart").getContext("2d")
                 var averageConfig = {
@@ -84,8 +81,7 @@
                         ]
                     }
                 }
-                var totalChart = new ApexCharts(totalCtx,totalConfig)
-                totalChart.render()
+                var totalChart = new Chart(totalCtx,totalConfig)
                 var averageChart = new Chart(averageCtx,averageConfig)
             }
           },
