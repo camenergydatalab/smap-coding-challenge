@@ -6,10 +6,11 @@
 <body>
     <div id="app">
         <v-app id="inspire"> 
+            <h2>Summary Graph</h2>
             <canvas id="totalchart"></canvas>
             <canvas id="averagechart"></canvas>
             <v-container>
-                <v-card>
+                <h2>User Table</h2>
                     <v-card>
                         <v-data-table
                         :headers="headers"
@@ -20,7 +21,6 @@
                         :multi-sort="true"
                     ></v-data-table>
                     </v-card>
-                </v-card>
                 
                 
             </v-container>
@@ -59,30 +59,54 @@
                     data:{
                         labels:datetime,
                         datasets:[
-                            {
+                            {   type: "line",
                                 label: "total",
                                 data:"{{ data.total }}".split(","),
-                                backgroundColor:"rgba(255,153,0,0.4)"
-                            }
-                        ]
-                    }
-                }
-                var averageCtx = document.getElementById("averagechart").getContext("2d")
-                var averageConfig = {
-                    type:"line",
-                    data:{
-                        labels:datetime,
-                        datasets:[
-                            {
+                                backgroundColor:"rgba(255,153,0,0.4)",
+                                yAxisID: "total-y-axis",
+                                fill: false,
+                            },
+                            {   type: "line",
                                 label: "average",
                                 data:"{{ data.average }}".split(","),
-                                backgroundColor:"rgba(153,255,51,0.4)"
+                                backgroundColor:"rgba(153,255,51,0.4)",
+                                yAxisID: "average-y-axis",
+                                fill:false
                             },
                         ]
-                    }
+                    },
+                    options:{
+                        responsive: true,
+                        scales: {
+                            yAxes:[{
+                                id: "total-y-axis",
+                                type: "linear",
+                                position: "left"
+                            },
+                            {
+                                id: "average-y-axis",
+                                type: "linear",
+                                position: "right"
+                            }
+                        ]
+                        }
+                    },
                 }
+                // var averageCtx = document.getElementById("averagechart").getContext("2d")
+                // var averageConfig = {
+                //     type:"line",
+                //     data:{
+                //         labels:datetime,
+                //         datasets:[
+                //             {
+                //                 label: "average",
+                //                 data:"{{ data.average }}".split(","),
+                //                 backgroundColor:"rgba(153,255,51,0.4)"
+                //             },
+                //         ]
+                //     }
+                // }
                 var totalChart = new Chart(totalCtx,totalConfig)
-                var averageChart = new Chart(averageCtx,averageConfig)
             }
           },
           mounted: function (){
