@@ -9,19 +9,27 @@ from pandas.core.frame import DataFrame
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
-
+import time
 def summary(request):
-    
-    agg_df = pd.read_csv("../data/concat.csv")
+    print(time.time())
+    agg_df = pd.read_csv("../data/summary.csv",index_col=0)
+    print(time.time())
+    print(agg_df)
     x = agg_df["datetime"]
     y = agg_df["average"]
-    byte = BytesIO()
-    sns.jointplot(x, y)
-    plt.savefig(byte)
-    graph = img_format(byte)
+    print(time.time())
+    # byte = BytesIO()
+    # sns.lineplot(x=x,y=y)
+    # plt.savefig(byte)
+    # print(time.time())
+    # graph = img_format(byte)
+    # print(time.time())
+    user_df = pd.read_csv("../data/user_data.csv")
     context = {
         'message': 'Hello!',
-        "graph":graph
+        # "graph":graph,
+        "data":agg_df.to_dict(),
+        "user_data":user_df
     }
     return render(request, 'consumption/summary.html', context)
 
