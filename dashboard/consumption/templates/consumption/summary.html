@@ -6,7 +6,8 @@
 <body>
     <div id="app">
         <v-app id="inspire"> 
-            <canvas id="totalchart"></canvas>
+            <!-- <canvas id="totalchart"></canvas> -->
+            <div id="totalchart"></div>
             <canvas id="averagechart"></canvas>
             <v-container>
                 <v-card>
@@ -49,23 +50,25 @@
           },
           methods:{
             createChart: function(){
-                var totalCtx = document.getElementById("totalchart").getContext("2d")
+                var totalCtx = document.querySelector("#totalchart")
                 var datetime = []
                 "{% for d in data.datetime %}"
                 datetime.push("{{ d }}")
                 "{% endfor %}"
                 var totalConfig = {
-                    type:"line",
-                    data:{
-                        labels:datetime,
-                        datasets:[
-                            {
-                                label: "total",
-                                data:"{{ data.total }}".split(","),
-                                backgroundColor:"rgba(255,153,0,0.4)"
-                            }
-                        ]
-                    }
+                    chart:{
+                        type:"line",
+                    },
+                    series:[
+                        {
+                            name: "total",
+                            data:"{{ data.total }}".split(","),
+                        }
+                    ],
+                    xaxis:{
+                        categories:datetime,
+                    },
+                    
                 }
                 var averageCtx = document.getElementById("averagechart").getContext("2d")
                 var averageConfig = {
@@ -81,8 +84,9 @@
                         ]
                     }
                 }
+                var totalChart = new ApexCharts(totalCtx,totalConfig)
+                totalChart.render()
                 var averageChart = new Chart(averageCtx,averageConfig)
-                var totalChart = new Chart(totalCtx,totalConfig)
             }
           },
           mounted: function (){
