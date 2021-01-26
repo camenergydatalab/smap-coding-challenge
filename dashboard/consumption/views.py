@@ -24,12 +24,13 @@ def summary(request):
     # print(time.time())
     # graph = img_format(byte)
     # print(time.time())
+    print(agg_df)
     user_df = pd.read_csv("../data/user_data.csv")
     context = {
         'message': 'Hello!',
         # "graph":graph,
-        "data":agg_df.to_dict(),
-        "user_data":user_df
+        "data":agg_df.to_dict(orient='list'),
+        "user_data":user_df.to_dict(orient='records')
     }
     return render(request, 'consumption/summary.html', context)
 

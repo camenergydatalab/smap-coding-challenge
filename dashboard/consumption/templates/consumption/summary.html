@@ -5,16 +5,28 @@
 <h1>{{message}}</h1>
 <body>
     <div id="app">
-        <v-container>
-            <img src="{{ graph }}">
-            <div>[[ data ]]</div>
-            <div>{{ data }}</div>
-            <v-data-table
-                :headers="headers"
-                :items="{{ data }}"
-
-            ></v-data-table>
-        </v-container>
+        <v-app id="inspire"> 
+            {{ data.datetime}}
+            <canvas id="totalchart"></canvas>
+            <canvas id="averagechart"></canvas>
+            <v-container>
+                <v-card>
+                    <v-card>
+                        <v-data-table
+                        :headers="headers"
+                        :items="{{ user_data }}"
+                        :items-per-page="100"
+                        group-by="area"
+                        :dense="true"
+                        :multi-sort="true"
+                    ></v-data-table>
+                    </v-card>
+                </v-card>
+                
+                
+            </v-container>
+        </v-app>
+        
     </div>
     
 
@@ -30,9 +42,48 @@
             data:{
               data:[],
               headers:[
-                  {text:"datatime",value:"datetime"},
-                  {text:"average", value:"average"}
+                  {text:"id",value:"id"},
+                  {text:"area", value:"area"},
+                  {text:"tariff", value:"tariff"}
               ]
+          },
+          methods:{
+            createChart: function(){
+                var totalCtx = document.getElementById("totalchart").getContext("2d")
+                var totalConfig = {
+                    type:"line",
+                    data:{
+                        labels:"{{ data.datetime }}".split(","),
+                        datasets:[
+                            {
+                                label: "total",
+                                data:"{{ data.total }}".split(","),
+                                backgroundColor:"rgba(255,153,0,0.4)"
+                            }
+                        ]
+                    }
+                }
+                var averageCtx = document.getElementById("averagechart").getContext("2d")
+                console.log("{{ data.average }}".split(","))
+                var averageConfig = {
+                    type:"line",
+                    data:{
+                        labels:"{{ data.datetime }}".split(","),
+                        datasets:[
+                            {
+                                label: "average",
+                                data:"{{ data.average }}".split(","),
+                                backgroundColor:"rgba(153,255,51,0.4)"
+                            },
+                        ]
+                    }
+                }
+                var averageChart = new Chart(averageCtx,averageConfig)
+                var totalChart = new Chart(totalCtx,totalConfig)
+            }
+          },
+          mounted: function (){
+            this.createChart()
           },
         })
       </script>
