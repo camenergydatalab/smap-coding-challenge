@@ -21,7 +21,7 @@
                         :multi-sort="true"
                     >
                         <template v-slot:item.id="{ item }">
-                            <a :href="{% url 'detail'  %}[[ item.id ]]" target="_blank">[[ item.id ]]</a>
+                            <a :href="[[ item.id ]]" target="_blank">[[ item.id ]]</a>
                             
                         </template>
                 </v-data-table>
