@@ -24,19 +24,22 @@ def summary(request):
     # print(time.time())
     # graph = img_format(byte)
     # print(time.time())
+    summary_by_area = pd.read_csv("../data/summary_area.csv")
     print(agg_df)
     user_df = pd.read_csv("../data/user_data.csv")
     context = {
-        'message': 'Hello!',
         # "graph":graph,
         "data":agg_df.to_dict(orient='list'),
+        "area_data":summary_by_area.to_dict(orient="list"),
         "user_data":user_df.to_dict(orient='records')
     }
     return render(request, 'consumption/summary.html', context)
 
 
-def detail(request):
+def detail(request,user_id):
+    user_df = pd.read_csv("../data/consumption/"+str(user_id)+ ".csv")
     context = {
+        "user_comsumption_data":user_df.to_dict(orient="list")
     }
     return render(request, 'consumption/detail.html', context)
 
