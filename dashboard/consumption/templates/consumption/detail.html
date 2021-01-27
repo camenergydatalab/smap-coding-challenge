@@ -1,20 +1,39 @@
 {% extends 'consumption/layout.html' %}
 
 {% block content %}
-<body>
     <div id="app">
-        <h2>Detail Graph</h2>
-        <canvas id="detailchart"></canvas>
-
+        <v-app-bar :fixed="true">
+            Comsumption Detail
+        </v-app-bar>
+        <v-container>
+                <h2>Detail Graph</h2>
+                <div>
+                        <ul>id: {{ user_data.id}}</ul>
+                        <ul>area: {{ user_data.area }}</ul>
+                        <ul>tariff: {{ user_data.tariff }}</ul>
+                        
+                        
+                        
+                    </div>
+                        <canvas id="detailchart"></canvas>
+        
+        </v-container>
     </div>
+    
+
+    
     <script src="https://unpkg.com/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.3/chartjs-plugin-zoom.js'></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js'></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ja.js"></script>
     <script>
         var vm= new Vue({
@@ -49,10 +68,30 @@
                     options:{
                         responsive: true,
                         scales: {
+                            xAxes:[{
+                                type: "time",
+                                time:{
+                                    min:moment(datetime[0]),
+                                    max:moment(datetime[-1])
+
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "datetime",
+                                    forntSize: 15
+                                }
+                                }
+                            ],
                             yAxes:[{
                                 id: "detail-y-axis",
                                 type: "linear",
-                                position: "left"
+                                position: "left",
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "comsumption",
+                                    forntSize: 15
+                                }
+                                
                             },
                             ],
                         },
@@ -80,6 +119,5 @@
           },
         })
       </script>
-</body>
 
 {% endblock %}
