@@ -3,13 +3,16 @@
 {% block content %}
 
 <h1></h1>
-<body>
     <div id="app">
         <v-app id="inspire"> 
-            <h2>Summary Graph</h2>
-            <canvas id="totalchart"></canvas>
-            <canvas id="areachart"></canvas>
+            <v-app-bar :fixed="true">
+                Comsumption Summary
+            </v-app-bar>
             <v-container>
+                <h2>Summary Graph</h2>
+            <canvas id="totalchart"></canvas>
+                <h2>Summary Graph by area</h2>
+                <canvas id="areachart"></canvas>
                 <h2>User Table</h2>
                     <v-card>
                         <v-data-table
@@ -37,11 +40,15 @@
     <script src="https://unpkg.com/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.3/chartjs-plugin-zoom.js'></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js'></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ja.js"></script>
     <script>
         var vm= new Vue({
@@ -63,6 +70,8 @@
                 "{% for d in data.datetime %}"
                 datetime.push(moment("{{ d }}").toString())
                 "{% endfor %}"
+                console.log(datetime[0])
+                console.log(datetime[100])
                 var totalConfig = {
                     type:"line",
                     data:{
@@ -76,38 +85,57 @@
                                 pointRadius:0,
                                 fill: false,
                             },
-                            {   type: "line",
-                                label: "average",
-                                data:"{{ data.average }}".split(","),
-                                borderColor:"rgba(153,255,51,0.4)",
-                                yAxisID: "average-y-axis",
-                                pointRadius:0,
-                                fill:false
-                            },
+
                         ]
                     },
                     options:{
                         responsive: true,
                         scales: {
+                            xAxes:[{
+                                type: "time",
+                                time:{
+                                    min:moment(datetime[0]),
+                                    max:moment(datetime[-1])
+
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "datetime",
+                                    forntSize: 15
+                                }
+                                }
+                            ],
                             yAxes:[{
                                 id: "total-y-axis",
                                 type: "linear",
-                                position: "left"
+                                position: "left",
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "total compsumption",
+                                    forntSize: 15
+                                }
                             },
                             {
                                 id: "average-y-axis",
                                 type: "linear",
-                                position: "right"
+                                position: "right",
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "average comsumption",
+                                    forntSize: 15
+                                }
                             }
                             ],
-                            // xAxes:[{
-                            //     type: "time",
-                            //     time:{
-                            //         unit: "day"
-                            //     }
-                            //     }
-                            // ],
+                            
                         },
+                        // zoom: {
+                        //     enabled: true,
+                        //     drag: true,
+                        //     mode: "x",
+                        //     rangeMin: {
+                        //         x: 3600000
+                        //     },
+                        // }
                         plugins:{
                             zoom: {
                                 pan:{
@@ -165,19 +193,25 @@
                     options:{
                         responsive: true,
                         scales: {
-                            // xAxes:[{
-                            //     type: "time",
-                            //     time:{
-                            //         unit: "day"
-                            //     }
-                            //     }
-                            // ],
+                            xAxes:[{
+                                type: "time",
+                                time:{
+                                    min:moment(datetime[0]),
+                                    max:moment(datetime[8000])
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "datetime",
+                                    forntSize: 15
+                                }
+                                }
+                            ],
                         },
                         plugins:{
                             zoom: {
                                 pan:{
                                     enabled:true,
-                                    mode:"x"
+                                    mode:"x",
                                 },
                                 zoom:{
                                     enabled: true,
@@ -197,6 +231,5 @@
           },
         })
       </script>
-</body>
 
 {% endblock %}
