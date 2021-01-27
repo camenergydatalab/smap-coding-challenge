@@ -1,5 +1,85 @@
 {% extends 'consumption/layout.html' %}
 
 {% block content %}
+<body>
+    <div id="app">
+        <h2>Detail Graph</h2>
+        <canvas id="detailchart"></canvas>
+
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ja.js"></script>
+    <script>
+        var vm= new Vue({
+            delimiters: ['[[',']]'],
+            el: '#app',
+            vuetify: new Vuetify(),
+            data:{
+              data:[],
+          },
+          methods:{
+            createChart: function(){
+                var detailCtx = document.getElementById("detailchart").getContext("2d")
+                var datetime = []
+                "{% for d in user_comsumption_data.datetime %}"
+                datetime.push(moment("{{ d }}").toString())
+                "{% endfor %}"
+                var detailConfig = {
+                    type:"line",
+                    data:{
+                        labels:datetime,
+                        datasets:[
+                            {   type: "line",
+                                label: "detail",
+                                data:"{{ user_comsumption_data.consumption }}".split(","),
+                                borderColor:"rgba(255,153,0,0.4)",
+                                yAxisID: "detail-y-axis",
+                                pointRadius:0,
+                                fill: false,
+                            },
+                        ]
+                    },
+                    options:{
+                        responsive: true,
+                        scales: {
+                            yAxes:[{
+                                id: "detail-y-axis",
+                                type: "linear",
+                                position: "left"
+                            },
+                            ],
+                        },
+                        plugins:{
+                            zoom: {
+                                pan:{
+                                    enabled:true,
+                                    mode:"x"
+                                },
+                                zoom:{
+                                    enabled: true,
+                                    drag: true,
+                                    mode: "x",
+                                }
+                            }
+                        }
+                    },
+                }
+
+                var detailChart = new Chart(detailCtx,detailConfig)
+            }
+          },
+          mounted: function (){
+            this.createChart()
+          },
+        })
+      </script>
+</body>
 
 {% endblock %}
