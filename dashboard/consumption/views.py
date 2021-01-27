@@ -38,8 +38,11 @@ def summary(request):
 
 def detail(request,user_id):
     user_df = pd.read_csv("../data/consumption/"+str(user_id)+ ".csv")
+    user_data_df = pd.read_csv("../data/user_data.csv")
+    d = user_data_df[user_data_df["id"].isin([user_id])]
     context = {
-        "user_comsumption_data":user_df.to_dict(orient="list")
+        "user_comsumption_data":user_df.to_dict(orient="list"),
+        "user_data":d.to_dict(orient="record")[0]
     }
     return render(request, 'consumption/detail.html', context)
 
