@@ -1,0 +1,5 @@
+- merge method of pandas does not work well
+- using csv file as file storage in /data so I dont use SQlite
+- summary graph has both average and total comsumption because we can get same insight from total or average
+- apexchart,which is rappar of chart.js, does not match due to long loading time
+- user_table can group by area
