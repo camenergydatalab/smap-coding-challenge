@@ -3,3 +3,6 @@
 - summary graph has both average and total comsumption because we can get same insight from total or average
 - apexchart,which is rappar of chart.js, does not match due to long loading time
 - user_table can group by area
+- when click user_id in user_table, link to detail view 
+- zooming graph
+- delete average graph due to heavy zooming
