@@ -71,7 +71,7 @@
                 datetime.push(moment("{{ d }}").toString())
                 "{% endfor %}"
                 console.log(datetime[0])
-                console.log(datetime[100])
+                console.log(datetime.slice(-1)[0])
                 var totalConfig = {
                     type:"line",
                     data:{
@@ -94,7 +94,7 @@
                                 type: "time",
                                 time:{
                                     min:moment(datetime[0]),
-                                    max:moment(datetime[-1])
+                                    max:moment(datetime.slice(-1)[0])
 
                                 },
                                 scaleLabel: {
@@ -186,7 +186,7 @@
                                 type: "time",
                                 time:{
                                     min:moment(datetime[0]),
-                                    max:moment(datetime[8000])
+                                    max:moment(datetime.slice(-1)[0])
                                 },
                                 scaleLabel: {
                                     display: true,
