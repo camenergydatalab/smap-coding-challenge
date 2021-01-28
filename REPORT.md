@@ -7,3 +7,4 @@
 - zooming graph
 - delete average graph due to heavy zooming
 - zoom in graph is too heavy
+- user_table can group by area
