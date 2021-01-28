@@ -2,9 +2,7 @@ from django.core.management.base import BaseCommand
 from numpy.lib.function_base import copy
 import pandas as pd
 import glob
-import seaborn as sns
 from pandas.core.frame import DataFrame
-import matplotlib.pyplot as plt
 
 class Command(BaseCommand):
     help = 'import data'
@@ -26,7 +24,6 @@ class Command(BaseCommand):
         sum_df = pd.DataFrame()
         agg_df.to_csv("../data/concat.csv")
         sum_df["datetime"] = agg_df["datetime"]
-        sum_df["average"] = agg_df.mean(axis=1)
         sum_df["total"] = agg_df.sum(axis=1)
         sum_df.to_csv("../data/summary.csv")
         return

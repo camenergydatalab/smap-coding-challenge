@@ -4,9 +4,6 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 # Create your views here.
 import pandas as pd
-import seaborn as sns
-from pandas.core.frame import DataFrame
-import matplotlib.pyplot as plt
 
 
 
