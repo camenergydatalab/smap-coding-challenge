@@ -6,3 +6,4 @@
 - when click user_id in user_table, link to detail view 
 - zooming graph
 - delete average graph due to heavy zooming
+- zoom in graph is too heavy
