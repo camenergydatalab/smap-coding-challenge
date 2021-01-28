@@ -7,6 +7,9 @@ import pandas as pd
 import seaborn as sns
 from pandas.core.frame import DataFrame
 import matplotlib.pyplot as plt
+
+
+
 def summary(request):
     agg_df = pd.read_csv("../data/summary.csv",index_col=0)
     summary_by_area = pd.read_csv("../data/summary_area.csv")
