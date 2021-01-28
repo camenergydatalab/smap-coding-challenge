@@ -10,6 +10,11 @@ class Command(BaseCommand):
     help = 'import data'
 
     def handle(self, *args, **options):
+        self.create_summary()
+        self.create_summary_by_area()
+        return
+    
+    def create_summary(self):
         consumption_data_paths = glob.glob("../data/consumption/*")
         df_list = []
         agg_df = self.read_consumption_data(consumption_data_paths[0])
@@ -17,6 +22,16 @@ class Command(BaseCommand):
             df = self.read_consumption_data(consumption_data_path)
             df_list.append(df)
         agg_df = self.aggregation(df_list)
+        
+        sum_df = pd.DataFrame()
+        agg_df.to_csv("../data/concat.csv")
+        sum_df["datetime"] = agg_df["datetime"]
+        sum_df["average"] = agg_df.mean(axis=1)
+        sum_df["total"] = agg_df.sum(axis=1)
+        sum_df.to_csv("../data/summary.csv")
+        return
+
+    def create_summary_by_area(self):
         user_df = pd.read_csv("../data/user_data.csv")
         grouped = user_df.groupby("area").count()
         areas_df_list = []
@@ -35,12 +50,8 @@ class Command(BaseCommand):
         
         areas_df = areas_df.drop_duplicates()
         areas_df.to_csv("../data/summary_area.csv")
-        sum_df = pd.DataFrame()
-        agg_df.to_csv("../data/concat.csv")
-        sum_df["datetime"] = agg_df["datetime"]
-        sum_df["average"] = agg_df.mean(axis=1)
-        sum_df["total"] = agg_df.sum(axis=1)
-        sum_df.to_csv("../data/summary.csv") 
+
+        return
         
     def aggregation(self,df_list):
         base_df = df_list[0].drop(df_list[0].columns[[1]], axis=1)
@@ -51,9 +62,6 @@ class Command(BaseCommand):
         agg_df = agg_df.drop_duplicates(subset=None,keep="first")
         return agg_df
 
-    def read_user_data(self):
-        user_df = pd.read_csv("../data/user_data.csv")
-        pass
 
     def read_consumption_data(self, path):
         user_id = path.split("/")[-1].split(".")[0]
