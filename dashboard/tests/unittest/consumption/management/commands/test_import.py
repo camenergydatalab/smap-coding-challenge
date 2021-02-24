@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, call, patch
 from django.test import TransactionTestCase
 from django.utils.timezone import make_aware
 
-from consumption.models import Cousumption, User
+from consumption.models import Consumption, User
 
 import_mod_path = 'consumption.management.commands.import'
 import_mod = importlib.import_module(import_mod_path)
@@ -31,10 +31,6 @@ dummy_cusum_data = """datetime,consumption
 class CommandTestcase(TransactionTestCase):
     databases = '__all__'
     dummy_user_id = 1111
-
-    def create_dummy_user(self):
-        # user 1
-        User.objects.create(id=self.dummy_user_id, area='a1', tariff='t1')
 
     @patch.object(import_mod.Command, 'get_user_data', MagicMock(
         return_value='get_user_data called'))
@@ -107,7 +103,7 @@ class CommandTestcase(TransactionTestCase):
         return_value=io.StringIO(dummy_cusum_data)))
     def test_read_consumption(self):
         # prepare dummy user
-        self.create_dummy_user()
+        User.objects.create(id=self.dummy_user_id, area='a1', tariff='t1')
 
         command = import_mod.Command()
         # execute with dummy user id
@@ -115,7 +111,7 @@ class CommandTestcase(TransactionTestCase):
 
         # cumsumption data
         user = User.objects.get(id=self.dummy_user_id)
-        cumsum_data = Cousumption.objects.filter(user_id=user)
+        cumsum_data = Consumption.objects.filter(user_id=user)
 
         # 1st data
         self.assertEqual(

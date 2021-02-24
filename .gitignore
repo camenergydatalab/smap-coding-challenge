@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# for Mac
+**/.DS_STORE
+
+# testing, test-report
+.coverage

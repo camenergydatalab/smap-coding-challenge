@@ -2,6 +2,291 @@
 
 {% block content %}
 
-<h1>{{message}}</h1>
+{% comment %} chart part {% endcomment %}
+<div class="chart">
+    <h1>1. Chart</h1>
+
+    <h3>Time Period</h3>
+    <select id="start-from"></select>
+    <select id="end-to"></select>
+
+    <button id="filter">Apply</button>
+
+    <h2>1-1. Total Consumption every 30 minutes</h2>
+    <canvas id="total_consumption-chart"></canvas>
+    <h2>1-2. Average Consumption every 30 minutes</h2>
+    <canvas id="avg_consumption-chart"></canvas>
+</div>
+
+{% comment %} table part {% endcomment %}
+<div class="table">
+    <h1>2. All Users and Its Average Consumption in All Period</h1>
+    <button id="download-csv">Download CSV</button>
+    <div id="table"></div>
+</div>
+
+<script>
+// max and min value of user's average consumption
+var _chartData = {{ chart_data|safe }},
+    _tableData = {{ table_data|safe }},
+    _maxUserAvgValue = Number(_tableData.max_value),
+    _minUserAvgValue = Number(_tableData.min_value),
+// chart element
+    _totalConsumCtx = document.getElementById('total_consumption-chart').getContext('2d'),
+    _avgConsumCtx = document.getElementById('avg_consumption-chart').getContext('2d'),
+// time period select box
+    _selectStartFrom = document.getElementById("start-from"),
+    _selectEndTo = document.getElementById("end-to"),
+// chart object
+    _totalChart = null,
+    _avgChart = null,
+// user table object
+    _userTable = null;
+
+
+window.onload = function() {
+    // create time period select box's option
+    createTimePeriodOptions();
+
+    // create total consumption chart
+    _totalChart = createChart(
+        _totalConsumCtx,
+        _chartData.total_data.map((data) => { return Number(data) }),
+        _chartData.labels,
+        'total consumption',
+        'rgba(255, 0, 0)'
+    );
+    // create average consumption chart
+    _avgChart = createChart(
+        _avgConsumCtx,
+        _chartData.avg_data.map((data) => { return Number(data) }),
+        _chartData.labels,
+        'average consumption',
+        'rgba(0, 0, 255)'
+    );
+
+    // create table content
+    var tableDataList = _tableData.data.map((data) => {
+        return {
+            'id': data.id,
+            'area': data.area,
+            'tariff': data.tariff,
+            'average': Number(data.average),
+            'averagePercent': (Number(data.average) / _maxUserAvgValue) * 100
+        }
+    });
+    _userTable = createTable(tableDataList);
+
+    bindButtonEvent();
+};
+
+// create time period select box's option
+function createTimePeriodOptions(){
+    var labels = _chartData.labels;
+
+    labels.forEach((data, index) => {
+        if (index % 48 === 0) {
+            // append every 48 element
+            var option = document.createElement("option");
+            option.value = index;
+            option.label = data;
+            _selectStartFrom.appendChild(option.cloneNode(true));
+            _selectEndTo.appendChild(option.cloneNode(true));
+        };
+    });
+    // append last element
+    var option = document.createElement("option");
+        option.value = labels.length;
+        option.label = labels[labels.length - 1];
+        _selectStartFrom.appendChild(option.cloneNode(true));
+
+        // select last element for "end-to" select box
+        option.setAttribute('selected', 'selected');
+        _selectEndTo.appendChild(option.cloneNode(true));
+}
+
+
+// custom max min header filter's editor
+function minMaxFilterEditor(cell, onRendered, success, cancel, editorParams){
+    function keypress(e){
+        // press Enter key
+        if(e.keyCode == 13){
+            buildValues();
+        }
+        // press Escape key
+        if(e.keyCode == 27){
+            cancel();
+        }
+    }
+    // set values
+    function buildValues(){
+        success({
+            start:start.value,
+            end:end.value,
+        });
+    }
+
+    // create min input
+    var start = document.createElement("input");
+    start.setAttribute("type", "number");
+    start.setAttribute("placeholder", "Min");
+    start.setAttribute("min", _minUserAvgValue);
+    start.setAttribute("max", _maxUserAvgValue);
+    start.style.padding = "4px";
+    start.style.width = "50%";
+    start.style.boxSizing = "border-box";
+    start.value = cell.getValue();
+    start.addEventListener("change", buildValues);
+    start.addEventListener("blur", buildValues);
+    start.addEventListener("keydown", keypress);
+
+    // create max input
+    var end = start.cloneNode();
+    end.setAttribute("placeholder", "Max");
+    end.addEventListener("change", buildValues);
+    end.addEventListener("blur", buildValues);
+    end.addEventListener("keydown", keypress);
+
+    var container = document.createElement("span");
+    container.appendChild(start);
+    container.appendChild(end);
+
+    return container;
+}
+
+// custom max min header filter
+function minMaxFilterFunction(headerValue, rowValue, rowData, filterParams){
+    // headerValue - the value of the header filter element
+    // rowValue - the value of the column in this row
+    // rowData - the data for the row being filtered
+    // filterParams - params object passed to the headerFilterFuncParams property
+
+    if (rowValue) {
+        if (headerValue.start != "") {
+            if (headerValue.end != "") {
+                return rowValue >= headerValue.start && rowValue <= headerValue.end;
+            } else {
+                return rowValue >= headerValue.start;
+            }
+        } else {
+            if (headerValue.end != "") {
+                return rowValue <= headerValue.end;
+            }
+        }
+    }
+
+    return true;
+}
+
+// create user table
+function createTable(dataList){
+    return new Tabulator("#table", {
+        layout:"fitColumns",
+        data: dataList,
+        columns: [
+            {title: "ID", field: "id", headerFilter: true},
+            {title: "Area", field: "area", headerFilter: true},
+            {title: "Tariff", field: "tariff", headerFilter: true},
+            {
+                title: "Average Consumption",
+                field: "average",
+                headerFilter: minMaxFilterEditor,
+                headerFilterFunc: minMaxFilterFunction,
+                headerFilterLiveFilter: false
+            },
+            {
+                title: 'Percentage of consumption to top user\'s average consumption',
+                field: "averagePercent",
+                formatter: 'progress',
+                formatterParams: {
+                    legend: function(value) {return `${Number(value).toFixed(1)}%`}
+                },
+                width: 500,
+            },
+        ],
+    });
+}
+
+// create chart
+function createChart(context, dataList, labelList, labelName, color) {
+    var config = {
+        type: 'line',
+        data: {
+        datasets: [{
+            data: dataList,
+            lineTension: 0,
+            backgroundColor: color,
+            label: labelName
+        }],
+        labels: labelList,
+        },
+        options: {
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'hour',
+                        displayFormats: {
+                            hour: 'yyyy MMM D HH:mm'
+                        }
+                    }
+                }]
+            }
+        }
+    };
+
+    return new Chart(context, config);
+}
+
+// recreate chart
+function recreateChart(start, end){
+    if (end - start < 1) {
+        alert('invarid period');
+        return;
+    }
+
+    _totalChart.destroy();
+    _avgChart.destroy();
+
+    _totalChart = createChart(
+        _totalConsumCtx,
+        _chartData.total_data.slice(start, end).map((data) => { return Number(data) }),
+        _chartData.labels.slice(start, end),
+        'total consumption',
+        'rgba(255, 0, 0)'
+    );
+    _avgChart = createChart(
+        _avgConsumCtx,
+        _chartData.avg_data.slice(start, end).map((data) => { return Number(data) }),
+        _chartData.labels.slice(start, end),
+        'average consumption',
+        'rgba(0, 0, 255)'
+    );
+}
+
+// button events
+function bindButtonEvent(){
+    // data.csv file download
+    document.getElementById("download-csv").addEventListener("click", function(){
+        _userTable.download("csv", "data.csv");
+    });
+
+    // filter button
+    document.getElementById("filter").addEventListener("click", function(){
+        recreateChart(_selectStartFrom.value, _selectEndTo.value);
+    });
+}
+
+</script>
+
+<style>
+select {
+    font-size: 1.5em;
+}
+button {
+    font-size: 1.5em;
+}
+</style>
 
 {% endblock %}
