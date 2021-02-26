@@ -2,4 +2,47 @@
 
 {% block content %}
 
+{% comment %} include ChartCreator js function {% endcomment %}
+{% include 'consumption/common/chart-creator.html' %}
+
+<h2>1. User id {{ user_id }} Consumption every 30 minutes</h2>
+<div class="chart">
+    <span>Time Period</span>
+    <select id="user-charts-start-from"></select>
+    <span>~</span>
+    <select id="user-charts-end-to"></select>
+    <button id="user-charts-filter">Apply</button>
+
+    <canvas id="charts-user-consumption-chart"></canvas>
+</div>
+{% comment %} <h3>{{ area }}{{ tariff }}</h3> {% endcomment %}
+
+<script>
+// start function
+Detail();
+
+function Detail(){
+    window.onload = function() {
+        // create user chart content
+        ChartCreator(
+            {{ chart_data.labels|safe }},
+            {{ chart_data.data|safe }}.map(function(obj) { return Number(obj) }),
+            'consumption',
+            'rgb(255, 0, 0)',
+            document.getElementById('charts-user-consumption-chart').getContext('2d'),
+            document.getElementById('user-charts-start-from'),
+            document.getElementById('user-charts-end-to'),
+            document.getElementById('user-charts-filter')
+        );
+    };
+}
+
+</script>
+
+<style>
+select, button, span {
+    font-size: 1.5em;
+}
+</style>
+
 {% endblock %}

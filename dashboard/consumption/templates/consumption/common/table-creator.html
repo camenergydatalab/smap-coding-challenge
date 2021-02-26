@@ -1,0 +1,45 @@
+{% block content %}
+
+<script>
+
+function TableCreator(
+    _tableData,
+    _tableColumns, // http://tabulator.info/docs/4.9/columns
+    _cellCallBack,
+    _tableId,
+    _downloadBtn
+) {
+    // user table object
+    let _userTable = null;
+
+    createTable();
+
+    function createTable(){
+        // create table content
+        _userTable = createTablePart();
+        csvDownloadEvent();
+    }
+
+    // create user table
+    function createTablePart(){
+        return new Tabulator("#" + _tableId, {
+            layout: "fitColumns",
+            data: _tableData,
+            columns: _tableColumns,
+            cellClick: _cellCallBack
+        });
+    }
+
+    // button events
+    function csvDownloadEvent(){
+        // data.csv file download
+        _downloadBtn.addEventListener("click", function () {
+            _userTable.download("csv", "data.csv");
+        });
+    }
+
+}
+
+</script>
+
+{% endblock %}

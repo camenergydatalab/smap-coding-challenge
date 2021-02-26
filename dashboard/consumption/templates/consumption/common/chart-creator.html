@@ -1,0 +1,126 @@
+{% block content %}
+
+<script>
+
+function ChartCreator(
+    _labels, // label
+    _data, // data
+    _title, // title
+    _color, // color
+    _canvasCtx, // canvas context
+    _selectStartFrom, // select box element for starting
+    _selectEndTo, // select box element for ending
+    _applyButton // button element for applying
+) {
+    // chart object
+    let _chart = null;
+
+    // call main function
+    createChart();
+
+    // create total and average chart
+    function createChart(){
+        // create time period select box's option
+        createTimePeriodOptions();
+        // create total consumption chart
+        _chart = createChartPart(
+            _canvasCtx,
+            _data,
+            _labels,
+            _title,
+            _color
+        );
+        // event for filter applying
+        applyFilterEvent();
+    }
+
+    // create time period select box's option
+    function createTimePeriodOptions(){
+        console.log(_labels.slice(4943, 4993),);
+        _labels.forEach(function(data, index) {
+            if (index % 48 === 0) {
+                //console.log(index, data);
+                // append every 48 element
+                const option = document.createElement("option");
+                option.value = index;
+                option.label = data;
+                _selectStartFrom.appendChild(option.cloneNode(true));
+                _selectEndTo.appendChild(option.cloneNode(true));
+            };
+        });
+        // append last element
+        const option = document.createElement("option");
+            option.value = _labels.length;
+            option.label = _labels[_labels.length - 1];
+            _selectStartFrom.appendChild(option.cloneNode(true));
+
+            // select last element for "charts-end-to" select box
+            option.setAttribute('selected', 'selected');
+            _selectEndTo.appendChild(option.cloneNode(true));
+    }
+
+    // create chart
+    function createChartPart(context, dataList, labelList, labelName, color) {
+        const config = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    data: dataList,
+                    lineTension: 0,
+                    backgroundColor: color,
+                    label: labelName
+                }],
+                labels: labelList
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            displayFormats: {
+                                hour: 'yyyy MMM D HH:mm'
+                            }
+                        }
+                    }]
+                }
+            }
+        };
+
+        return new Chart(context, config);
+    }
+
+    // recreate chart
+    function recreateChartPart(start, end){
+        // alert if the start is after the end
+        if (end - start < 1) {
+            alert('Invalid time period');
+            return;
+        }
+
+        // destroy chart before recreating
+        _chart.destroy();
+
+        // create chart aggain with specified time period
+        _chart = createChartPart(
+            _canvasCtx,
+            _data.slice(start, end),
+            _labels.slice(start, end),
+            _title,
+            _color
+        );
+    }
+
+    // filter apply
+    function applyFilterEvent(){
+        // filter button
+        _applyButton.addEventListener("click", function() {
+            recreateChartPart(_selectStartFrom.value, _selectEndTo.value);
+        });
+    }
+}
+
+</script>
+
+{% endblock %}

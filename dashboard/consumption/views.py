@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from decimal import Decimal
 
+from django.http import Http404
 from django.db.models import Avg, Sum
 from django.shortcuts import render
 
@@ -75,7 +76,34 @@ def summary(request):
     return render(request, 'consumption/summary.html', context)
 
 
-def detail(request):
+def detail(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        raise Http404("User does not exist")
+
+    chart_data = create_user_chart_data(user)
+
     context = {
+        'user_id': user_id,
+        'area': user.area,
+        'tariff': user.tariff,
+        'chart_data': chart_data
     }
     return render(request, 'consumption/detail.html', context)
+
+
+def create_user_chart_data(user):
+    labels = []
+    data = []
+
+    # aggregate consumption data
+    consum_data = Consumption.objects.filter(user_id=user).order_by('datetime')
+    for consum in consum_data:
+        labels.append(consum.datetime.strftime("%Y-%m-%d %H:%M:%S"))
+        data.append(str(consum.consumption))
+
+    return {
+        'labels': labels,
+        'data': data,
+    }
