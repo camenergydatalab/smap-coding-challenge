@@ -34,7 +34,8 @@ class Consumption(models.Model):
         User,
         on_delete=models.CASCADE)
     datetime = models.DateTimeField(
-        "datetime")
+        "datetime",
+        unique_for_date=True)
     consumption = models.DecimalField(
         "consumption",
         max_digits=10,  # NOTICE: should check max value
