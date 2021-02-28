@@ -123,7 +123,7 @@ class Command(BaseCommand):
             if self.dup_results:
                 raise Exception(
                     'Importing does not executed. '
-                    'See results in {}'.format(result_dir)
+                    'See validation results in "{}"'.format(result_dir)
                 )
             # if file does not have duplicate data
             else:

@@ -1,11 +1,38 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import os
+import platform
 
 from datetime import datetime
 import pytz
 
 from django.test import TransactionTestCase
+from django.conf import settings
 from consumption.models import Consumption, User
+
+
+BASE_DIR = getattr(settings, "BASE_DIR", None)
+TEST_DIR = os.path.join(BASE_DIR, 'tests')
+UNIT_TEST_DIR = os.path.join(TEST_DIR, 'unittest')
+INTEG_TEST_DIR = os.path.join(TEST_DIR, 'integtest')
+
+
+def get_driver_path():
+    driver = platform.system()
+    if driver == 'Darwin':
+        return os.path.join(INTEG_TEST_DIR, 'driver/mac/chromedriver')
+
+
+# DRIVER_PATH = get_driver_path()
+
+SELENIUM_SETTING = {
+    'chromedriver_path': get_driver_path(),
+    'binary_location': '/usr/bin/chromium-browser',
+    'headless': '--headless',
+    'disable-gpu': '--disable-gpu',
+    'no-sandbox': '--no-sandbox',
+    'window-size': '--window-size=1024x1024'
+}
 
 
 # Definition of Mock User info
@@ -32,9 +59,11 @@ USER_DATA_3 = {
 }
 
 # Definition of Mock Cousumption info
-TEST_DATETIME_1 = pytz.utc.localize(datetime(2021, 1, 1, 00, 30, 00))
-TEST_DATETIME_2 = pytz.utc.localize(datetime(2021, 1, 1, 1, 00, 00))
-TEST_DATETIME_3 = pytz.utc.localize(datetime(2021, 1, 1, 1, 30, 00))
+TEST_DATETIME_1 = pytz.utc.localize(datetime(2021, 1, 1, 00, 00, 00))
+TEST_DATETIME_2 = pytz.utc.localize(datetime(2021, 1, 1, 00, 30, 00))
+TEST_DATETIME_3 = pytz.utc.localize(datetime(2021, 1, 1, 1, 00, 00))
+TEST_DATETIME_4 = pytz.utc.localize(datetime(2021, 1, 2, 00, 00, 00))
+TEST_DATETIME_5 = pytz.utc.localize(datetime(2021, 1, 3, 00, 00, 00))
 
 CONSUM_DATA_USER_1_1 = {
     "id": 11111,
@@ -55,6 +84,20 @@ CONSUM_DATA_USER_1_3 = {
     "user_id": USER_1,
     "datetime": TEST_DATETIME_3,
     'consumption': 300
+}
+
+CONSUM_DATA_USER_1_4 = {
+    "id": 11114,
+    "user_id": USER_1,
+    "datetime": TEST_DATETIME_4,
+    'consumption': 400
+}
+
+CONSUM_DATA_USER_1_5 = {
+    "id": 11115,
+    "user_id": USER_1,
+    "datetime": TEST_DATETIME_5,
+    'consumption': 500
 }
 
 CONSUM_DATA_USER_2_1 = {
@@ -78,6 +121,20 @@ CONSUM_DATA_USER_2_3 = {
     'consumption': 600
 }
 
+CONSUM_DATA_USER_2_4 = {
+    "id": 22224,
+    "user_id": USER_2,
+    "datetime": TEST_DATETIME_4,
+    'consumption': 400
+}
+
+CONSUM_DATA_USER_2_5 = {
+    "id": 22225,
+    "user_id": USER_2,
+    "datetime": TEST_DATETIME_5,
+    'consumption': 500
+}
+
 CONSUM_DATA_USER_3_1 = {
     "id": 33331,
     "user_id": USER_3,
@@ -97,6 +154,20 @@ CONSUM_DATA_USER_3_3 = {
     "user_id": USER_3,
     "datetime": TEST_DATETIME_3,
     'consumption': 900
+}
+
+CONSUM_DATA_USER_3_4 = {
+    "id": 33334,
+    "user_id": USER_3,
+    "datetime": TEST_DATETIME_4,
+    'consumption': 400
+}
+
+CONSUM_DATA_USER_3_5 = {
+    "id": 33335,
+    "user_id": USER_3,
+    "datetime": TEST_DATETIME_5,
+    'consumption': 500
 }
 
 

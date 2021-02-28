@@ -15,7 +15,21 @@
 
     <canvas id="charts-user-consumption-chart"></canvas>
 </div>
-{% comment %} <h3>{{ area }}{{ tariff }}</h3> {% endcomment %}
+<div class='user-info'>
+    <h2>2. User Info</h2>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>area</th>
+            <th>tariff</th>
+        </tr>
+        <tr>
+            <td>{{ user_id }}</td>
+            <td>{{ area }}</td>
+            <td>{{ tariff }}</td>
+        </tr>
+    </table>
+</div>
 
 <script>
 // start function
@@ -27,7 +41,7 @@ function Detail(){
         ChartCreator(
             {{ chart_data.labels|safe }},
             {{ chart_data.data|safe }}.map(function(obj) { return Number(obj) }),
-            'consumption',
+            'consumption (kWh)',
             'rgb(255, 0, 0)',
             document.getElementById('charts-user-consumption-chart').getContext('2d'),
             document.getElementById('user-charts-start-from'),
@@ -42,6 +56,13 @@ function Detail(){
 <style>
 select, button, span {
     font-size: 1.5em;
+}
+table, th, td {
+  border: 1px solid black;
+    padding: 10px;
+}
+table {
+    border-collapse:  collapse;
 }
 </style>
 

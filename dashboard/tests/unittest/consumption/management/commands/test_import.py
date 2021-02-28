@@ -21,6 +21,7 @@ from django.utils.timezone import make_aware
 import_mod_path = 'consumption.management.commands.import'
 
 # definition for mock
+
 BASE_DIR = getattr(settings, "BASE_DIR", None)
 MOCK_DATA_DIR = os.path.join(BASE_DIR, 'tests/unittest/test_data')
 MOCK_DUP_DATA_DIR = os.path.join(MOCK_DATA_DIR, 'duplicated')
@@ -30,9 +31,26 @@ MOCK_CONSUM_DATA_DIR = 'consumption'
 MOCK_VALIDATION_DIR = os.path.join(MOCK_DATA_DIR, 'validation_results')
 MOCK_DUP_RESULT_DIR_NAME = 'duplicated'
 
+# Definition of Mock user info
+
 MOCK_USER_ID_1 = 1111
 MOCK_USER_ID_2 = 2222
 MOCK_USER_ID_3 = 3333
+
+MOCK_UR_CSV_DATA = {
+    MOCK_USER_ID_1: {
+        'area': 'a1',
+        'tariff': "t1"
+    },
+    MOCK_USER_ID_2: {
+        'area': 'a2',
+        'tariff': "t2"
+    },
+    MOCK_USER_ID_3: {
+        'area': 'a3',
+        'tariff': "t3"
+    },
+}
 
 # Definition of Mock Cousumption info
 MOCK_CSV_DATETIME_1 = make_aware(
@@ -44,7 +62,7 @@ MOCK_CSV_DATETIME_3 = make_aware(
 MOCK_CSV_DATETIME_4 = make_aware(
     datetime.datetime.strptime('2016-07-15 01:30:00', '%Y-%m-%d %H:%M:%S'))
 
-MOCK_CSV_DATA = {
+MOCK_CM_CSV_DATA = {
     MOCK_USER_ID_1: {
         MOCK_CSV_DATETIME_1: 39.0,
         MOCK_CSV_DATETIME_2: 147.0,
@@ -291,8 +309,9 @@ class CommandValidationTestcase(TransactionTestCase):
         )
         # check if user data and consumption created correctly
         user_1 = User.objects.get(id=MOCK_USER_ID_1)
-        self.assertEqual(user_1.area, 'a1')
-        self.assertEqual(user_1.tariff, 't1')
+        self.assertEqual(user_1.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['area'])
+        self.assertEqual(
+            user_1.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['tariff'])
         consum_1 = Consumption.objects.filter(
             user_id=user_1).order_by('datetime')
 
@@ -300,23 +319,24 @@ class CommandValidationTestcase(TransactionTestCase):
         self.assertEqual(consum_1[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_1[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_1[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_1[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
         self.assertEqual(consum_1[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_1[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3])
         self.assertEqual(consum_1[3].datetime, MOCK_CSV_DATETIME_4)
         self.assertEqual(
             consum_1[3].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4])
 
         user_2 = User.objects.get(id=MOCK_USER_ID_2)
-        self.assertEqual(user_2.area, 'a2')
-        self.assertEqual(user_2.tariff, 't2')
+        self.assertEqual(user_2.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['area'])
+        self.assertEqual(
+            user_2.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['tariff'])
         consum_2 = Consumption.objects.filter(
             user_id=user_2).order_by('datetime')
 
@@ -324,23 +344,24 @@ class CommandValidationTestcase(TransactionTestCase):
         self.assertEqual(consum_2[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_2[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_2[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_2[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
         self.assertEqual(consum_2[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_2[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3])
         self.assertEqual(consum_2[3].datetime, MOCK_CSV_DATETIME_4)
         self.assertEqual(
             consum_2[3].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4])
 
         user_3 = User.objects.get(id=MOCK_USER_ID_3)
-        self.assertEqual(user_3.area, 'a3')
-        self.assertEqual(user_3.tariff, 't3')
+        self.assertEqual(user_3.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['area'])
+        self.assertEqual(
+            user_3.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['tariff'])
         consum_3 = Consumption.objects.filter(
             user_id=user_3).order_by('datetime')
 
@@ -348,19 +369,19 @@ class CommandValidationTestcase(TransactionTestCase):
         self.assertEqual(consum_3[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_3[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_3[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_3[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
         self.assertEqual(consum_3[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_3[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3])
         self.assertEqual(consum_3[3].datetime, MOCK_CSV_DATETIME_4)
         self.assertEqual(
             consum_3[3].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4])
 
         # check if file is not created in directory
         dup_result_dir = os.path.join(
@@ -438,8 +459,9 @@ class CommandModeTestcase(TransactionTestCase):
         )
         # check if user data and consumption created correctly
         user_1 = User.objects.get(id=MOCK_USER_ID_1)
-        self.assertEqual(user_1.area, 'a1')
-        self.assertEqual(user_1.tariff, 't1')
+        self.assertEqual(user_1.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['area'])
+        self.assertEqual(
+            user_1.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['tariff'])
         consum_1 = Consumption.objects.filter(
             user_id=user_1).order_by('datetime')
         # only 2 data was imported
@@ -448,15 +470,16 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_1[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_1[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_1[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_1[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
 
         user_2 = User.objects.get(id=MOCK_USER_ID_2)
-        self.assertEqual(user_2.area, 'a2')
-        self.assertEqual(user_2.tariff, 't2')
+        self.assertEqual(user_2.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['area'])
+        self.assertEqual(
+            user_2.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['tariff'])
         consum_2 = Consumption.objects.filter(
             user_id=user_2).order_by('datetime')
         # only 2 data was imported
@@ -464,15 +487,16 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_2[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_2[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_2[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_2[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
 
         user_3 = User.objects.get(id=MOCK_USER_ID_3)
-        self.assertEqual(user_3.area, 'a3')
-        self.assertEqual(user_3.tariff, 't3')
+        self.assertEqual(user_3.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['area'])
+        self.assertEqual(
+            user_3.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['tariff'])
         consum_3 = Consumption.objects.filter(
             user_id=user_3).order_by('datetime')
         # only 2 data was imported
@@ -480,11 +504,11 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_3[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_3[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_3[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_3[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
 
     def test_handle__mode_sum__duplication_found_in_user(self):
         set_mock_data(
@@ -514,8 +538,9 @@ class CommandModeTestcase(TransactionTestCase):
         )
         # check if user data and sum consumption created correctly
         user_1 = User.objects.get(id=MOCK_USER_ID_1)
-        self.assertEqual(user_1.area, 'a1')
-        self.assertEqual(user_1.tariff, 't1')
+        self.assertEqual(user_1.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['area'])
+        self.assertEqual(
+            user_1.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['tariff'])
         consum_1 = Consumption.objects.filter(
             user_id=user_1).order_by('datetime')
         # only 3 data was imported
@@ -523,20 +548,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_1[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_1[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_1[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_1[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
         # imported as sum value
-        sum_1 = MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3] +\
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4]
+        sum_1 = MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3] +\
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4]
         self.assertEqual(consum_1[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(consum_1[2].consumption, sum_1)
 
         user_2 = User.objects.get(id=MOCK_USER_ID_2)
-        self.assertEqual(user_2.area, 'a2')
-        self.assertEqual(user_2.tariff, 't2')
+        self.assertEqual(user_2.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['area'])
+        self.assertEqual(
+            user_2.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['tariff'])
         consum_2 = Consumption.objects.filter(
             user_id=user_2).order_by('datetime')
         # only 3 data was imported
@@ -544,20 +570,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_2[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_2[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_2[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_2[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
         # imported as sum value
-        sum_2 = MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3] +\
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4]
+        sum_2 = MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3] +\
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4]
         self.assertEqual(consum_2[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(consum_2[2].consumption, sum_2)
 
         user_3 = User.objects.get(id=MOCK_USER_ID_3)
-        self.assertEqual(user_3.area, 'a3')
-        self.assertEqual(user_3.tariff, 't3')
+        self.assertEqual(user_3.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['area'])
+        self.assertEqual(
+            user_3.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['tariff'])
         consum_3 = Consumption.objects.filter(
             user_id=user_3).order_by('datetime')
         # only 3 data was imported
@@ -565,14 +592,14 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_3[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_3[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_3[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_3[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
         # imported as sum value
-        sum_3 = MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3] +\
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4]
+        sum_3 = MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3] +\
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4]
         self.assertEqual(consum_3[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(consum_3[2].consumption, sum_3)
 
@@ -590,8 +617,9 @@ class CommandModeTestcase(TransactionTestCase):
         )
         # check if user data and consumption created correctly
         user_1 = User.objects.get(id=MOCK_USER_ID_1)
-        self.assertEqual(user_1.area, 'a1')
-        self.assertEqual(user_1.tariff, 't1')
+        self.assertEqual(user_1.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['area'])
+        self.assertEqual(
+            user_1.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['tariff'])
         consum_1 = Consumption.objects.filter(
             user_id=user_1).order_by('datetime')
         # only 3 data was imported
@@ -600,20 +628,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_1[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_1[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_1[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_1[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
         # first one is imported
         self.assertEqual(consum_1[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_1[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_3])
 
         user_2 = User.objects.get(id=MOCK_USER_ID_2)
-        self.assertEqual(user_2.area, 'a2')
-        self.assertEqual(user_2.tariff, 't2')
+        self.assertEqual(user_2.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['area'])
+        self.assertEqual(
+            user_2.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['tariff'])
         consum_2 = Consumption.objects.filter(
             user_id=user_2).order_by('datetime')
         # only 3 data was imported
@@ -621,20 +650,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_2[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_2[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_2[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_2[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
         # first one is imported
         self.assertEqual(consum_2[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_2[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_3])
 
         user_3 = User.objects.get(id=MOCK_USER_ID_3)
-        self.assertEqual(user_3.area, 'a3')
-        self.assertEqual(user_3.tariff, 't3')
+        self.assertEqual(user_3.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['area'])
+        self.assertEqual(
+            user_3.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['tariff'])
         consum_3 = Consumption.objects.filter(
             user_id=user_3).order_by('datetime')
         # only 3 data was imported
@@ -642,16 +672,16 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_3[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_3[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_3[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_3[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
         # first one is imported
         self.assertEqual(consum_3[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_3[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_3])
 
     def test_handle__mode_last__duplication_found_in_consumption(self):
         set_mock_data(
@@ -667,8 +697,9 @@ class CommandModeTestcase(TransactionTestCase):
         )
         # check if user data and consumption created correctly
         user_1 = User.objects.get(id=MOCK_USER_ID_1)
-        self.assertEqual(user_1.area, 'a1')
-        self.assertEqual(user_1.tariff, 't1')
+        self.assertEqual(user_1.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['area'])
+        self.assertEqual(
+            user_1.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_1]['tariff'])
         consum_1 = Consumption.objects.filter(
             user_id=user_1).order_by('datetime')
         # only 3 data was imported
@@ -677,20 +708,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_1[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_1[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_1[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_1[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_2])
         # last one is imported
         self.assertEqual(consum_1[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_1[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_1][MOCK_CSV_DATETIME_4])
 
         user_2 = User.objects.get(id=MOCK_USER_ID_2)
-        self.assertEqual(user_2.area, 'a2')
-        self.assertEqual(user_2.tariff, 't2')
+        self.assertEqual(user_2.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['area'])
+        self.assertEqual(
+            user_2.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_2]['tariff'])
         consum_2 = Consumption.objects.filter(
             user_id=user_2).order_by('datetime')
         # only 3 data was imported
@@ -698,20 +730,21 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_2[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_2[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_2[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_2[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_2])
         # last one is imported
         self.assertEqual(consum_2[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_2[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_2][MOCK_CSV_DATETIME_4])
 
         user_3 = User.objects.get(id=MOCK_USER_ID_3)
-        self.assertEqual(user_3.area, 'a3')
-        self.assertEqual(user_3.tariff, 't3')
+        self.assertEqual(user_3.area, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['area'])
+        self.assertEqual(
+            user_3.tariff, MOCK_UR_CSV_DATA[MOCK_USER_ID_3]['tariff'])
         consum_3 = Consumption.objects.filter(
             user_id=user_3).order_by('datetime')
         # only 3 data was imported
@@ -719,13 +752,13 @@ class CommandModeTestcase(TransactionTestCase):
         self.assertEqual(consum_3[0].datetime, MOCK_CSV_DATETIME_1)
         self.assertEqual(
             consum_3[0].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_1])
         self.assertEqual(consum_3[1].datetime, MOCK_CSV_DATETIME_2)
         self.assertEqual(
             consum_3[1].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_2])
         # last one is imported
         self.assertEqual(consum_3[2].datetime, MOCK_CSV_DATETIME_3)
         self.assertEqual(
             consum_3[2].consumption,
-            MOCK_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4])
+            MOCK_CM_CSV_DATA[MOCK_USER_ID_3][MOCK_CSV_DATETIME_4])

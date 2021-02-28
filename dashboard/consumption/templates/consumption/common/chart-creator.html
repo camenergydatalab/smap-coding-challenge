@@ -8,10 +8,12 @@ function ChartCreator(
     _title, // title
     _color, // color
     _canvasCtx, // canvas context
-    _selectStartFrom, // select box element for starting
-    _selectEndTo, // select box element for ending
-    _applyButton // button element for applying
+    _selectStartFrom, // select box element for start
+    _selectEndTo, // select box element for end
+    _applyButton // button element for apply
 ) {
+    // filter datetime pattern
+    const pattern = /00:00:00$/;
     // chart object
     let _chart = null;
 
@@ -37,9 +39,8 @@ function ChartCreator(
     // create time period select box's option
     function createTimePeriodOptions(){
         _labels.forEach(function(data, index) {
-            if (index % 48 === 0) {
-                //console.log(index, data);
-                // append every 48 element
+            // NOTICE: showing only every AM 00:00
+            if (pattern.test(data)) {
                 const option = document.createElement("option");
                 option.value = index;
                 option.label = data;
@@ -47,15 +48,19 @@ function ChartCreator(
                 _selectEndTo.appendChild(option.cloneNode(true));
             };
         });
-        // append last element
-        const option = document.createElement("option");
-            option.value = _labels.length;
-            option.label = _labels[_labels.length - 1];
-            _selectStartFrom.appendChild(option.cloneNode(true));
+        // when last one does not match pattern
+        const lastElement = _labels[_labels.length - 1];
+        if (!pattern.test(lastElement)) {
+            // append last element
+            const option = document.createElement("option");
+                option.value = _labels.length;
+                option.label = lastElement;
+                _selectStartFrom.appendChild(option.cloneNode(true));
 
-            // select last element for "charts-end-to" select box
-            option.setAttribute('selected', 'selected');
-            _selectEndTo.appendChild(option.cloneNode(true));
+                // select last element for "charts-end-to" select box
+                option.setAttribute('selected', 'selected');
+                _selectEndTo.appendChild(option.cloneNode(true));
+        }
     }
 
     // create chart
@@ -81,6 +86,11 @@ function ChartCreator(
                             displayFormats: {
                                 hour: 'yyyy MMM D HH:mm'
                             }
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
                         }
                     }]
                 }
@@ -97,15 +107,15 @@ function ChartCreator(
             alert('Invalid time period');
             return;
         }
-
         // destroy chart before recreating
         _chart.destroy();
 
         // create chart aggain with specified time period
+        const sliceEnd = end + 1;
         _chart = createChartPart(
             _canvasCtx,
-            _data.slice(start, end),
-            _labels.slice(start, end),
+            _data.slice(start, sliceEnd),
+            _labels.slice(start, sliceEnd),
             _title,
             _color
         );
@@ -115,7 +125,10 @@ function ChartCreator(
     function applyFilterEvent(){
         // filter button
         _applyButton.addEventListener("click", function() {
-            recreateChartPart(_selectStartFrom.value, _selectEndTo.value);
+            recreateChartPart(
+                Number(_selectStartFrom.value),
+                Number(_selectEndTo.value)
+            );
         });
     }
 }

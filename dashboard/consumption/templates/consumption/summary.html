@@ -7,8 +7,8 @@
 {% comment %} include ChartCreator js function {% endcomment %}
 {% include 'consumption/common/chart-creator.html' %}
 
-<h2>1-1. Total Consumption every 30 minutes</h2>
 <div class="chart">
+    <h2>1-1. Total Consumption every 30 minutes</h2>
     <span>Time Period: </span>
     <select id="total-charts-start-from"></select>
     <span>~</span>
@@ -18,8 +18,8 @@
     <canvas id="charts-total-consumption-chart"></canvas>
 </div>
 
-<h2>1-2. Average Consumption every 30 minutes</h2>
 <div class="chart">
+    <h2>1-2. Average Consumption every 30 minutes</h2>
     <span>Time Period: </span>
     <select id="avg-charts-start-from"></select>
     <span>~</span>
@@ -49,7 +49,7 @@ function Summary(){
         ChartCreator(
             {{ chart_data.labels|safe }},
             {{ chart_data.total_data|safe }}.map(function(obj) { return Number(obj) }),
-            'total consumption',
+            'total consumption (kWh)',
             'rgb(255, 0, 0)',
             document.getElementById('charts-total-consumption-chart').getContext('2d'),
             document.getElementById('total-charts-start-from'),
@@ -61,7 +61,7 @@ function Summary(){
         ChartCreator(
             {{ chart_data.labels|safe }},
             {{ chart_data.avg_data|safe }}.map(function(obj) { return Number(obj) }),
-            'avg consumption',
+            'avg consumption (kWh)',
             'rgb(0, 0, 255)',
             document.getElementById('charts-avg-consumption-chart').getContext('2d'),
             document.getElementById('avg-charts-start-from'),
@@ -100,7 +100,7 @@ function Summary(){
             {title: "Area", field: "area", headerFilter: true},
             {title: "Tariff", field: "tariff", headerFilter: true},
             {
-                title: "Average Consumption",
+                title: "Average Consumption (kWh)",
                 field: "average",
                 headerFilter: minMaxFilterEditor,
                 headerFilterFunc: minMaxFilterFunction,
