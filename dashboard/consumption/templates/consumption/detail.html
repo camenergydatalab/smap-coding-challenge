@@ -5,9 +5,9 @@
 {% comment %} include ChartCreator js function {% endcomment %}
 {% include 'consumption/common/chart-creator.html' %}
 
-<h2>1. User id {{ user_id }} Consumption every 30 minutes</h2>
 <div class="chart">
-    <span>Time Period</span>
+    <h2>1. User id {{ user_id }} Consumption every 30 minutes</h2>
+    <span>Time Period:</span>
     <select id="user-charts-start-from"></select>
     <span>~</span>
     <select id="user-charts-end-to"></select>
@@ -17,7 +17,7 @@
 </div>
 <div class='user-info'>
     <h2>2. User Info</h2>
-    <table>
+    <table id="user-info-table">
         <tr>
             <th>id</th>
             <th>area</th>

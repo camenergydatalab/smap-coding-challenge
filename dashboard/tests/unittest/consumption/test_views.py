@@ -1,191 +1,99 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import statistics
-from functools import reduce
 from io import StringIO
 from unittest.mock import MagicMock, patch
 
 from django.core.handlers.wsgi import WSGIRequest
+from django.http import Http404
 from django.shortcuts import render
 from django.test import TransactionTestCase
+
+from consumption.models import Consumption, User
+from consumption.views import summary, detail
+
 from tests import test_fixtures
 
-from consumption.views import (
-    create_chart_data,
-    create_table_data,
-    get_user_avg_consum,
-    summary
-)
 
+MOCK_CHART_DATA = {
+    'labels': 'mock label',
+    'total_data': 'mock total_data',
+    'avg_data': 'mock avg_data'
+}
 
-# user data
-ALL_USER_DATA_LIST = [
-    test_fixtures.USER_DATA_1, test_fixtures.USER_DATA_2, test_fixtures.USER_DATA_3
-]
+MOCK_TABLE_DATA = {
+    'data': 'mock data',
+    'min_value': 'mock min_value',
+    'max_value': 'mock max_value'
+}
 
-# consumption data group by user
-USER_1_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_1_1, test_fixtures.CONSUM_DATA_USER_1_2,
-    test_fixtures.CONSUM_DATA_USER_1_3
-]
-USER_2_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_2_1, test_fixtures.CONSUM_DATA_USER_2_2,
-    test_fixtures.CONSUM_DATA_USER_2_3
-]
-USER_3_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_3_1, test_fixtures.CONSUM_DATA_USER_3_2,
-    test_fixtures.CONSUM_DATA_USER_3_3
-]
-# flatten list of each user's consumption data
-ALL_CONSUM_DATA_LIST = reduce(
-    lambda a, b: a + b,
-    [USER_1_CONSUM_LIST, USER_2_CONSUM_LIST, USER_3_CONSUM_LIST]
-)
-
-# consumption data group by datetime
-DATETIME_1_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_1_1, test_fixtures.CONSUM_DATA_USER_2_1,
-    test_fixtures.CONSUM_DATA_USER_3_1
-]
-DATETIME_2_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_1_2, test_fixtures.CONSUM_DATA_USER_2_2,
-    test_fixtures.CONSUM_DATA_USER_3_2
-]
-DATETIME_3_CONSUM_LIST = [
-    test_fixtures.CONSUM_DATA_USER_1_3, test_fixtures.CONSUM_DATA_USER_2_3,
-    test_fixtures.CONSUM_DATA_USER_3_3
-]
-
-# user's average value
-MIN_AVG_VALUE = '100'
-MAX_AVG_VALUE = '300'
-MOCK_AVG_CUNSUM = {
-    test_fixtures.USER_DATA_1['id']: MIN_AVG_VALUE,
-    test_fixtures.USER_DATA_2['id']: '200',
-    test_fixtures.USER_DATA_3['id']: MAX_AVG_VALUE,
+MOCK_USER_CHART_DATA = {
+    'labels': 'mock label',
+    'data': 'mock data'
 }
 
 
-def get_average_consum(data_list):
-    return statistics.mean(
-        data['consumption'] for data in data_list
+def mock_summary_request():
+    """mock request for summary
+
+    Returns:
+        WSGIRequest: WSGIRequest object in summary path
+    """
+    return WSGIRequest(
+        {
+            'REQUEST_METHOD': 'GET',
+            'PATH_INFO': '/',
+            'wsgi.input': StringIO()
+        }
     )
 
 
-def get_total_consum(data_list):
-    return sum([
-        data['consumption'] for data in data_list
-    ])
+def mock_detail_request(user_id):
+    """mock request for detail
 
+    Args:
+        user_id (int): user id
 
-def mock_create_chart_data():
-    labels = [
-        test_fixtures.TEST_DATETIME_1.strftime("%Y-%m-%d %H:%M:%S"),
-        test_fixtures.TEST_DATETIME_2.strftime("%Y-%m-%d %H:%M:%S"),
-        test_fixtures.TEST_DATETIME_3.strftime("%Y-%m-%d %H:%M:%S"),
-    ]
-    total_data = [
-        str(get_total_consum(DATETIME_1_CONSUM_LIST)),
-        str(get_total_consum(DATETIME_2_CONSUM_LIST)),
-        str(get_total_consum(DATETIME_3_CONSUM_LIST)),
-    ]
-    avg_data = [
-        str(get_average_consum(DATETIME_1_CONSUM_LIST)),
-        str(get_average_consum(DATETIME_2_CONSUM_LIST)),
-        str(get_average_consum(DATETIME_3_CONSUM_LIST)),
-    ]
-
-    return {
-        'labels': labels,
-        'total_data': total_data,
-        'avg_data': avg_data
-    }
-
-
-def mock_create_table_data():
-    data = []
-    for user in ALL_USER_DATA_LIST:
-        data.append({
-            'id': user['id'],
-            'area': user['area'],
-            'tariff': user['tariff'],
-            'average': MOCK_AVG_CUNSUM[user['id']]
-        })
-
-    return data
+    Returns:
+        WSGIRequest: WSGIRequest object in detail path
+    """
+    return WSGIRequest(
+        {
+            'REQUEST_METHOD': 'GET',
+            'PATH_INFO': '/detail/{}'.format(user_id),
+            'wsgi.input': StringIO()
+        }
+    )
 
 
 class SummaryTestcase(TransactionTestCase):
+    """Test for summary view
+
+    Attributes:
+        databases (str): set multiple database
+    """
     databases = '__all__'
 
-    def setUp(self):
-        for user_data in ALL_USER_DATA_LIST:
-            test_fixtures.UserTestData.setUp(user_data)
-        for consum_data in ALL_CONSUM_DATA_LIST:
-            test_fixtures.ConsumptionTestData.setUp(consum_data)
-
-    def test_create_chart_data(self):
-        expected = mock_create_chart_data()
-
-        # execute
-        result = create_chart_data()
-
-        # key's count is 3
-        self.assertEqual(3, len(result.keys()))
-        self.assertEqual(expected['labels'], result['labels'])
-        self.assertEqual(expected['total_data'], result['total_data'])
-        self.assertEqual(expected['avg_data'], result['avg_data'])
-
-    # mock get_user_avg_consum
-    @patch(
-        'consumption.views.get_user_avg_consum',
-        MagicMock(return_value=MOCK_AVG_CUNSUM))
-    def test_create_table_data(self):
-        expected = mock_create_table_data()
-
-        # execute
-        result = create_table_data()
-
-        # key's count is 3
-        self.assertEqual(3, len(result.keys()))
-        # NOTICE: element order does not matter
-        self.assertCountEqual(expected, result['data'])
-        self.assertEqual(MIN_AVG_VALUE, result['min_value'])
-        self.assertEqual(MAX_AVG_VALUE, result['max_value'])
-
-    def test_get_user_avg_consum(self):
-        expected = {
-            test_fixtures.USER_DATA_1['id']: str(
-                get_average_consum(USER_1_CONSUM_LIST)),
-            test_fixtures.USER_DATA_2['id']: str(
-                get_average_consum(USER_2_CONSUM_LIST)),
-            test_fixtures.USER_DATA_3['id']: str(
-                get_average_consum(USER_3_CONSUM_LIST))
-        }
-        # execute
-        result = get_user_avg_consum()
-
-        self.assertDictEqual(expected, result)
-
-    # mock get_user_avg_consum
+    # mock create_chart_data and create_table_data
     @patch(
         'consumption.views.create_chart_data',
-        MagicMock(return_value=mock_create_chart_data()))
+        MagicMock(return_value=MOCK_CHART_DATA))
     @patch(
         'consumption.views.create_table_data',
-        MagicMock(return_value=mock_create_table_data()))
+        MagicMock(return_value=MOCK_TABLE_DATA))
     def test_summary(self):
-        request = WSGIRequest(
-            {
-                'REQUEST_METHOD': 'GET',
-                'PATH_INFO': '/',
-                'wsgi.input': StringIO()
-            }
-        )
+        request = mock_summary_request()
         expected_context = {
-            'chart_data': mock_create_chart_data(),
-            'table_data': mock_create_table_data()
+            'chart_data': {
+                'labels': MOCK_CHART_DATA['labels'],
+                'total_data': MOCK_CHART_DATA['total_data'],
+                'avg_data': MOCK_CHART_DATA['avg_data']
+            },
+            'table_data': {
+                'data': MOCK_TABLE_DATA['data'],
+                'min_value': MOCK_TABLE_DATA['min_value'],
+                'max_value': MOCK_TABLE_DATA['max_value']
+            }
         }
         expected = render(
             request, 'consumption/summary.html', expected_context)
@@ -193,4 +101,70 @@ class SummaryTestcase(TransactionTestCase):
         # execute
         result = summary(request)
 
-        self.assertEqual(expected.content, result.content)
+        self.assertEqual(expected.status_code, result.status_code)
+
+    # raise error on create_chart_data
+    @patch(
+        'consumption.views.create_chart_data',
+        MagicMock(side_effect=Consumption.DoesNotExist))
+    @patch(
+        'consumption.views.create_table_data',
+        MagicMock(return_value=MOCK_TABLE_DATA))
+    def test_summary__raise_consmption_http404(self):
+        request = mock_summary_request()
+        # execute
+        with self.assertRaises(Http404):
+            summary(request)
+
+    # raise error on create_table_data
+    @patch(
+        'consumption.views.create_chart_data',
+        MagicMock(return_value=MOCK_CHART_DATA))
+    @patch(
+        'consumption.views.create_table_data',
+        MagicMock(side_effect=User.DoesNotExist))
+    def test_summary__raise_user_http404(self):
+        request = mock_summary_request()
+        # execute
+        with self.assertRaises(Http404):
+            summary(request)
+
+
+class DetailTestcase(TransactionTestCase):
+    """Test for detail view
+
+    Attributes:
+        databases (str): set multiple database
+    """
+    databases = '__all__'
+
+    # mock create_chart_data and create_table_data
+    @patch(
+        'consumption.views.create_user_chart_data',
+        MagicMock(return_value=MOCK_USER_CHART_DATA))
+    def test_detail(self):
+        test_fixtures.UserTestData.setUp(test_fixtures.USER_DATA_1)
+        request = mock_detail_request(test_fixtures.USER_DATA_1['id'])
+        expected_context = {
+            'user_id': test_fixtures.USER_DATA_1['id'],
+            'area': test_fixtures.USER_DATA_1['area'],
+            'tariff': test_fixtures.USER_DATA_1['tariff'],
+            'chart_data': {
+                'labels': MOCK_USER_CHART_DATA['labels'],
+                'total_data': MOCK_USER_CHART_DATA['data'],
+            },
+        }
+        expected = render(
+            request, 'consumption/detail.html', expected_context)
+
+        # execute
+        result = detail(request, test_fixtures.USER_DATA_1['id'])
+
+        self.assertEqual(expected.status_code, result.status_code)
+
+    # raise error on get user
+    def test_detail__raise_consmption_http404(self):
+        request = mock_detail_request(test_fixtures.USER_DATA_1['id'])
+        # execute
+        with self.assertRaises(Http404):
+            detail(request, '111111')

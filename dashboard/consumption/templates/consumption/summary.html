@@ -33,7 +33,7 @@
 {% include 'consumption/common/table-creator.html' %}
 
 <div class="table">
-    <h1>2. All Users and Its Average Consumption in All Period</h1>
+    <h1>2. All Users and Its Average Consumption in All Periods</h1>
     <h3>To see user's detail info, please click the row.</h3>
     <button id="download-csv">Download CSV</button>
     <div id="table"></div>
@@ -102,8 +102,8 @@ function Summary(){
             {
                 title: "Average Consumption (kWh)",
                 field: "average",
-                headerFilter: minMaxFilterEditor,
-                headerFilterFunc: minMaxFilterFunction,
+                headerFilter: createFilterEditor(minUserAvgValue, maxUserAvgValue),
+                headerFilterFunc: createFilterFunction(),
                 headerFilterLiveFilter: false
             },
             {
@@ -113,12 +113,31 @@ function Summary(){
                 formatterParams: {
                     legend: function(value) {return Number(value).toFixed(1) + '%'}
                 },
+                headerFilter: createFilterEditor(0, 100),
+                headerFilterFunc: createFilterFunction(),
                 width: 500,
             },
         ];
 
+        // open detail page if cell is clicked
+        function cellClickFunc(e, cell){
+            const value = cell.getRow().getCells()[0].getValue();
+            // use dummy "11111" for dynamic path replacing
+            window.open("{% url 'detail' 11111 %}".replace(/11111/, value));
+        }
+
+        return {
+            data: tableData,
+            columns: tableColumns,
+            cellClickCallBack: cellClickFunc
+        }
+
+    };
+
+    // create and return filter editor function
+    function createFilterEditor(minValue, maxValue){
         // custom max min header filter's editor for table
-        function minMaxFilterEditor(cell, onRendered, success, cancel, editorParams){
+        return function minMaxFilterEditor(cell, onRendered, success, cancel, editorParams){
             function keypress(e){
                 // press Enter key
                 if(e.keyCode == 13){
@@ -141,8 +160,8 @@ function Summary(){
             var start = document.createElement("input");
             start.setAttribute("type", "number");
             start.setAttribute("placeholder", "Min");
-            start.setAttribute("min", minUserAvgValue);
-            start.setAttribute("max", maxUserAvgValue);
+            start.setAttribute("min", minValue);
+            start.setAttribute("max", maxValue);
             start.style.padding = "4px";
             start.style.width = "50%";
             start.style.boxSizing = "border-box";
@@ -164,9 +183,12 @@ function Summary(){
 
             return container;
         }
+    };
 
+    // create and return filter function
+    function createFilterFunction(){
         // custom max min header filter for table
-        function minMaxFilterFunction(headerValue, rowValue, rowData, filterParams){
+        return function minMaxFilterFunction(headerValue, rowValue, rowData, filterParams){
             // headerValue - the value of the header filter element
             // rowValue - the value of the column in this row
             // rowData - the data for the row being filtered
@@ -186,19 +208,7 @@ function Summary(){
             }
             return true;
         }
-
-        // open detail page if cell is clicked
-        function cellClickFunc(e, cell){
-            const value = cell.getRow().getCells()[0].getValue();
-            window.open("{% url 'detail' 11111 %}".replace(/11111/, value))
-        }
-
-        return {
-            data: tableData,
-            columns: tableColumns,
-            cellClickCallBack: cellClickFunc
-        }
-    }
+    };
 
 }
 

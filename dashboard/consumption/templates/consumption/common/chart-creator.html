@@ -12,8 +12,8 @@ function ChartCreator(
     _selectEndTo, // select box element for end
     _applyButton // button element for apply
 ) {
-    // filter datetime pattern
-    const pattern = /00:00:00$/;
+    // filter datetime filterPattern
+    const filterPattern = /00:00:00$/;
     // chart object
     let _chart = null;
 
@@ -40,7 +40,7 @@ function ChartCreator(
     function createTimePeriodOptions(){
         _labels.forEach(function(data, index) {
             // NOTICE: showing only every AM 00:00
-            if (pattern.test(data)) {
+            if (filterPattern.test(data)) {
                 const option = document.createElement("option");
                 option.value = index;
                 option.label = data;
@@ -48,9 +48,9 @@ function ChartCreator(
                 _selectEndTo.appendChild(option.cloneNode(true));
             };
         });
-        // when last one does not match pattern
+        // when last one does not match filterPattern
         const lastElement = _labels[_labels.length - 1];
-        if (!pattern.test(lastElement)) {
+        if (!filterPattern.test(lastElement)) {
             // append last element
             const option = document.createElement("option");
                 option.value = _labels.length;

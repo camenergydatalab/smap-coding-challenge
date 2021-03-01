@@ -19,15 +19,16 @@ INTEG_TEST_DIR = os.path.join(TEST_DIR, 'integtest')
 
 def get_driver_path():
     driver = platform.system()
-    if driver == 'Darwin':
+    if driver == 'Darwin':  # Mac OS
         return os.path.join(INTEG_TEST_DIR, 'driver/mac/chromedriver')
+    # TODO: if need another OS, new definition need here
 
 
 # DRIVER_PATH = get_driver_path()
 
 SELENIUM_SETTING = {
     'chromedriver_path': get_driver_path(),
-    'binary_location': '/usr/bin/chromium-browser',
+    # 'binary_location': '/usr/bin/chromium-browser', # use if need
     'headless': '--headless',
     'disable-gpu': '--disable-gpu',
     'no-sandbox': '--no-sandbox',
@@ -174,11 +175,26 @@ CONSUM_DATA_USER_3_5 = {
 class UserTestData(TransactionTestCase):
     """
     set up User data
+
+    Attributes:
+        databases (str): set multiple database
     """
     databases = '__all__'
 
     @classmethod
     def setUp(cls, data):
+        """set up user data
+
+        Create given user's data
+
+        Args:
+            data (dict):
+                {
+                    "id": Number,
+                    "area": String,
+                    "tariff": String,
+                }
+        """
         User.objects.create(
             id=data["id"],
             area=data["area"],
@@ -189,11 +205,27 @@ class UserTestData(TransactionTestCase):
 class ConsumptionTestData(TransactionTestCase):
     """
     set up Consumption data
+
+    Attributes:
+        databases (str): set multiple database
     """
     databases = '__all__'
 
     @classmethod
     def setUp(cls, data):
+        """set up user data
+
+        Create given user's data
+
+        Args:
+            data (dict):
+                {
+                    "id": Integer,
+                    "user_id": String,
+                    "datetime": DateTime Object,
+                    "consumption": Float or Decimal
+                }
+        """
         Consumption.objects.create(
             id=data["id"],
             user_id=User.objects.get(id=data["user_id"]),
