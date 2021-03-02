@@ -179,12 +179,7 @@ def setup_mock_data():
 
 class CreateChartDataTestcase(TransactionTestCase):
     """Test for "create_chart_data" function
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     def test_create_chart_data(self):
         setup_mock_data()
         expected = mock_create_chart_data()
@@ -206,12 +201,7 @@ class CreateChartDataTestcase(TransactionTestCase):
 
 class CreateTableDataTestcase(TransactionTestCase):
     """Test for "create_table_data" function
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     # mock get_user_avg_consum
     @patch(
         'consumption.services.get_user_avg_consum',
@@ -242,12 +232,7 @@ class CreateTableDataTestcase(TransactionTestCase):
 
 class GetUserAvgConsumTestcase(TransactionTestCase):
     """Test for "get_user_avg_consum" function
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     def test_get_user_avg_consum(self):
         setup_mock_data()
         expected = {
@@ -271,12 +256,7 @@ class GetUserAvgConsumTestcase(TransactionTestCase):
 
 class CreateUserChartDataTestcase(TransactionTestCase):
     """Test for "create_user_chart_data" function
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     def test_create_user_chart_data(self):
         setup_mock_data()
         expected_labels = []
@@ -287,8 +267,7 @@ class CreateUserChartDataTestcase(TransactionTestCase):
             expected_data.append(
                 '{}.0'.format(str(data['consumption'])))
         # execute
-        user = User.objects.get(id=test_fixtures.USER_1)
-        result = create_user_chart_data(user)
+        result = create_user_chart_data(test_fixtures.USER_1)
 
         self.assertEqual(len(result.keys()), 2)
         self.assertListEqual(result['labels'], expected_labels)

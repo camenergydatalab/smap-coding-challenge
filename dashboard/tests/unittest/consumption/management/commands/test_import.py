@@ -234,10 +234,8 @@ class CommandValidationTestcase(TransactionTestCase):
     """Test for Command class with validation parameter
 
     Attributes:
-        databases (str): set multiple database
         import_mod (Module): Module object of import.py
     """
-    databases = '__all__'
     import_mod = None
 
     def setUp(self):
@@ -477,10 +475,8 @@ class CommandModeTestcase(TransactionTestCase):
     """Test for Command class with mode parameter
 
     Attributes:
-        databases (str): set multiple database
         import_mod (Module): Module object of import.py
     """
-    databases = '__all__'
     import_mod = None
 
     def setUp(self):

@@ -52,6 +52,9 @@ def detail(request, user_id):
 
     Create User's Detail view.
 
+    Args:
+        user_id (int): user id
+
     Returns:
         render function: Django render funciton
 
@@ -60,7 +63,7 @@ def detail(request, user_id):
     """
     try:
         user = User.objects.get(id=user_id)
-        chart_data = create_user_chart_data(user)
+        chart_data = create_user_chart_data(user_id)
     except User.DoesNotExist:
         raise Http404("User does not exist")
 

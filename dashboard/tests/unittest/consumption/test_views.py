@@ -68,12 +68,7 @@ def mock_detail_request(user_id):
 
 class SummaryTestcase(TransactionTestCase):
     """Test for summary view
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     # mock create_chart_data and create_table_data
     @patch(
         'consumption.views.create_chart_data',
@@ -132,12 +127,7 @@ class SummaryTestcase(TransactionTestCase):
 
 class DetailTestcase(TransactionTestCase):
     """Test for detail view
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     # mock create_chart_data and create_table_data
     @patch(
         'consumption.views.create_user_chart_data',

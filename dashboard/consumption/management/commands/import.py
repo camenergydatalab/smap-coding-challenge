@@ -244,7 +244,8 @@ class Command(BaseCommand):
             result_dir (str): path to save validation results
         """
         # check duplication of user data
-        user_results = self.get_duplicated_index_list(data=user_file, column='id')
+        user_results = self.get_duplicated_index_list(
+            data=user_file, column='id')
         if user_results:
             self.save_dup_results(
                 user_results,
@@ -261,8 +262,7 @@ class Command(BaseCommand):
                     os.path.splitext(os.path.basename(file))[0]
                 )
 
-        # write results
-        os.makedirs(result_dir)
+        # write results to csv
         self.write_dup_results_to_csv(result_dir)
 
     def save_dup_results(self, results, filename):
@@ -300,7 +300,7 @@ class Command(BaseCommand):
                 self.create_consumption(file)
 
             transaction.savepoint_commit(savepoint)
-            print('Importing done safely.')
+            print('Importing finished safely.')
 
         except User.DoesNotExist as err:
             transaction.savepoint_rollback(savepoint)
@@ -369,21 +369,22 @@ class Command(BaseCommand):
                         [i for i in duplicated]
                     )
 
-    def get_csv_rows_as_iter(self, csv_file, chk_culumn, can_sum):
-        """get csv rows as iterration
+    def load_csv_rows_as_iter(self, csv_file, chk_culumn, can_sum):
+        """load csv rows as iterration
 
-        Get csv rows data as a iterration
+        Load csv rows data as a iterration
 
         Args:
             csv_file (str): path to csv file to read
             chk_culumn (str): culumn for specified mode
-            can_sum (bool): if duplicated data can be sum, specify true
+            can_sum (bool): if duplicated data can be summmed up, specify true
 
         Yields:
             pandas.DataFrame.iterrows() : iteration of each rows
 
         Raises:
-            Exception: if duplication found and duplicated data can not be sum
+            Exception: case for duplication found and
+                duplicated data can not be summed up
         """
         data_frame = pd.read_csv(csv_file)
         if self.mode_choice == MODE_CHOICE_FIRST:
@@ -396,6 +397,7 @@ class Command(BaseCommand):
             csv_data = data_frame.groupby([chk_culumn], as_index=False).sum()
         # need check if cannot sum data (e.g. user data)
         elif self.mode_choice == MODE_CHOICE_SUM:
+            # check duplication
             duplicated_list = self.get_duplicated_index_list(
                 data=csv_file,
                 column=chk_culumn
@@ -407,6 +409,7 @@ class Command(BaseCommand):
                     'has founded in row number {}'.format(
                         csv_file, duplicated_list)
                 )
+            # if duplication not found
             else:
                 csv_data = data_frame
 
@@ -420,7 +423,7 @@ class Command(BaseCommand):
         Args:
             user_csv_file (str): path to csv file of user data
         """
-        csv_rows_iter = self.get_csv_rows_as_iter(
+        csv_rows_iter = self.load_csv_rows_as_iter(
             csv_file=user_csv_file,
             chk_culumn='id',
             can_sum=False)
@@ -428,9 +431,9 @@ class Command(BaseCommand):
         self.import_user_data(csv_rows_iter)
 
     def import_user_data(self, csv_rows_iter):
-        """create user
+        """import user data
 
-        Create user data.
+        Import user data into database.
 
         Args:
             csv_rows_iter
@@ -447,7 +450,7 @@ class Command(BaseCommand):
         """
         user_data = [
             User(
-                id=row[1]['id'],
+                id=row[1]['id'],  # row[1] include all row info
                 area=row[1]['area'],
                 tariff=row[1]['tariff'],
             ) for row in csv_rows_iter
@@ -462,7 +465,7 @@ class Command(BaseCommand):
         Args:
             file (str): path to csv file of consumption data
         """
-        csv_rows_iter = self.get_csv_rows_as_iter(
+        csv_rows_iter = self.load_csv_rows_as_iter(
             csv_file=file,
             chk_culumn='datetime',
             can_sum=True)
@@ -473,9 +476,9 @@ class Command(BaseCommand):
         )
 
     def import_consumption_data(self, user_id, csv_rows_iter):
-        """create user
+        """import consumption data
 
-        Create user data.
+        Import consumption data into database.
 
         Args:
             csv_rows_iter
@@ -509,7 +512,7 @@ class Command(BaseCommand):
     def print_importing_message(self, file):
         """print importing message
 
-        Print message during importing
+        Print message on console during importing
 
         Args:
             file (str): path to file of importing data
@@ -519,6 +522,6 @@ class Command(BaseCommand):
     def print_database_rollbacked(self):
         """print rollback message
 
-        Print database rollback message
+        Print database rollback message on console
         """
         print('Database rollbacked.')

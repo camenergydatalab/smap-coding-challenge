@@ -3,9 +3,7 @@ from __future__ import unicode_literals
 
 from decimal import Decimal
 
-from django.db.models import Avg, Sum
-
-from .models import Consumption, User
+from .queries import ConsumptionQueryset, UserQueryset
 
 
 def create_chart_data():
@@ -27,16 +25,11 @@ def create_chart_data():
     avg_data = []
 
     # aggregate consumption data
-    consum_data = Consumption.objects.values('datetime').annotate(
-        Avg('consumption'), Sum('consumption')).order_by('datetime')
-
-    if consum_data.exists():
-        for consum in consum_data:
-            labels.append(consum['datetime'].strftime("%Y-%m-%d %H:%M:%S"))
-            total_data.append(str(consum['consumption__sum']))
-            avg_data.append(str(consum['consumption__avg']))
-    else:
-        raise Consumption.DoesNotExist
+    consum_data = ConsumptionQueryset.get_consumption_avg_and_sum()
+    for consum in consum_data:
+        labels.append(consum['datetime'].strftime("%Y-%m-%d %H:%M:%S"))
+        total_data.append(str(consum['consumption__sum']))
+        avg_data.append(str(consum['consumption__avg']))
 
     return {
         'labels': labels,
@@ -66,19 +59,16 @@ def create_table_data():
         User.DoesNotExist: if user is not found
     """
     data = []
-    avg_consum_data = get_user_avg_consum()
+    consum_data = get_user_avg_consum()
 
-    user_data = User.objects.all()
-    if user_data.exists():
-        for user in user_data:
-            data.append({
-                'id': user.id,
-                'area': user.area,
-                'tariff': user.tariff,
-                'average': avg_consum_data[user.id]
-            })
-    else:
-        raise User.DoesNotExist
+    user_data = UserQueryset.get_all_user()
+    for user in user_data:
+        data.append({
+            'id': user.id,
+            'area': user.area,
+            'tariff': user.tariff,
+            'average': consum_data[user.id]
+        })
 
     min_value = min(data, key=lambda x: Decimal(x['average']))['average']
     max_value = max(data, key=lambda x: Decimal(x['average']))['average']
@@ -93,36 +83,29 @@ def create_table_data():
 def get_user_avg_consum():
     """get user's average consumption
 
-    Get user's average comsumption
+    Get user's average comsumption as dict
 
     Returns: dict:
         {
             int (user id): str ...average consumption
         }
-
-    Raises:
-        Consumption.DoesNotExist: if Consumption is not found
     """
     avg_consum_data = {}
 
-    consum_data = Consumption.objects.values('user_id').annotate(
-        Avg('consumption'))
-    if consum_data.exists():
-        for data in consum_data:
-            avg_consum_data[data['user_id']] = str(data['consumption__avg'])
-    else:
-        raise Consumption.DoesNotExist
+    consum_data = ConsumptionQueryset.get_each_user_average_consumption()
+    for data in consum_data:
+        avg_consum_data[data['user_id']] = str(data['consumption__avg'])
 
     return avg_consum_data
 
 
-def create_user_chart_data(user):
-    """get user's average consumption
+def create_user_chart_data(user_id):
+    """create user chart data
 
-    Get user's average comsumption
+    Create chart data for specified user
 
     Args:
-        user (User object): user model object
+        user_id (int): user id
 
     Returns: dict:
         {
@@ -137,13 +120,11 @@ def create_user_chart_data(user):
     data = []
 
     # aggregate consumption data
-    consum_data = Consumption.objects.filter(user_id=user).order_by('datetime')
-    if consum_data.exists():
-        for consum in consum_data:
-            labels.append(consum.datetime.strftime("%Y-%m-%d %H:%M:%S"))
-            data.append(str(consum.consumption))
-    else:
-        raise User.DoesNotExist
+    consum_data = ConsumptionQueryset.get_user_consumption_order_by_date(
+        user_id)
+    for consum in consum_data:
+        labels.append(consum.datetime.strftime("%Y-%m-%d %H:%M:%S"))
+        data.append(str(consum.consumption))
 
     return {
         'labels': labels,

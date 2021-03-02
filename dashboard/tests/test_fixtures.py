@@ -175,12 +175,7 @@ CONSUM_DATA_USER_3_5 = {
 class UserTestData(TransactionTestCase):
     """
     set up User data
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
-
     @classmethod
     def setUp(cls, data):
         """set up user data
@@ -205,11 +200,7 @@ class UserTestData(TransactionTestCase):
 class ConsumptionTestData(TransactionTestCase):
     """
     set up Consumption data
-
-    Attributes:
-        databases (str): set multiple database
     """
-    databases = '__all__'
 
     @classmethod
     def setUp(cls, data):
