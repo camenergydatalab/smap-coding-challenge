@@ -1,2 +1,2 @@
-coverage
-selenium
+coverage==5.4
+selenium==3.141.0
