@@ -2,6 +2,55 @@
 
 {% block content %}
 
-<h1>{{message}}</h1>
+{#<div class="container">#}
+{#       <div class="row">#}
+{#           <h3>消費者一覧</h3>#}
+{#           <table class="table table-striped table-bordered table-hover">#}
+{#               <tr>#}
+{#                   {% for column, item in df.iteritems %}#}
+{#                       <th>{{ column }}</th>#}
+{#                   {% endfor %}#}
+{#               </tr>#}
+{#               {% for index, values in df.iterrows %}#}
+{#                   <tr>#}
+{#                       {% if index == 0 %}#}
+{#                           {% for value in values %}#}
+{#                               <td>{{ value }}</td>#}
+{#                           {% endfor %}#}
+{#                       {% else %}#}
+{#                           {% for value in values %}#}
+{#                               <td>{{ value }}</td>#}
+{#                           {% endfor %}#}
+{#                       {% endif %}#}
+{#                   </tr>#}
+{#               {% endfor %}#}
+{#           </table>#}
+{#       </div>#}
+{#    </div>#}
+
+    <div class="container">
+        <div>
+            <svg width="600" height="500">
+                {% include "consumption/total_consumption.svg" %}
+            </svg>
+        </div>
+        <div class="row">
+            <h4>消費者一覧</h4>
+            <table class="table table-striped table-bordered table-hover">
+                <tr>
+                    <th>id</th>
+                    <th>area</th>
+                    <th>tariff</th>
+                </tr>
+                {% for item in object_list %}
+                    <tr>
+                        <td><a href="{% url 'detail' item.pk %}">{{ item.pk }}</a></td>
+                        <td>{{ item.area }}</td>
+                        <td>{{ item.tariff }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 
 {% endblock %}

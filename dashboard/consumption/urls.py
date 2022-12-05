@@ -1,8 +1,8 @@
-from django.conf.urls import url
-from . import views
+from django.urls import path
+from .views import SummaryView, SummaryDetail
 
 urlpatterns = [
-    url(r'^$', views.summary),
-    url(r'^summary/', views.summary),
-    url(r'^detail/', views.detail),
+    path(r'', SummaryView.as_view()),
+    path(r'summary/', SummaryView.as_view(), name='summary'),
+    path(r'detail/<int:pk>', SummaryDetail.as_view(), name='detail'),
 ]
