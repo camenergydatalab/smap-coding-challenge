@@ -1,5 +1,103 @@
 {% extends 'consumption/layout.html' %}
 
 {% block content %}
+    <div>
+        <div><a href="{% url "consumption:summary" %}">Summary</a></div>
 
+        <div>
+            <div class="h1">Detail</div>
+            <div>UserID: {{ user.id }}</div>
+            <div>area: {{ user.area }}</div>
+            <div>tariff: {{ user.tariff }}</div>
+        </div>
+
+        <div>
+            <div class="h2">consumption</div>
+
+            <canvas id="consumption-chart"></canvas>
+
+            {% if current_date %}
+                <div class="d-flex justify-content-between">
+                    <div>
+                        {% if prev_date %}
+                            <button class="h2 btn" onclick="location.href='?current_date={{ prev_date }}'">&laquo;</button>
+                        {% else %}
+                            <button class="h2 btn disabled">&laquo;</button>
+                        {% endif %}
+
+                        <span class="h2 mx-3">{{ current_date }}</span>
+
+                        {% if next_date %}
+                            <button class="h2 btn" onclick="location.href='?current_date={{ next_date }}'">&raquo;</button>
+                        {% else %}
+                            <button class="h2 btn">&raquo;</button>
+                        {% endif %}
+                        <select onchange="location.href=`?current_date=${this.value}`">
+                            {% for date in date_list %}
+                                <option value="{{ date }}" {% if date == current_date %}selected{% endif %}>{{ date }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Date Time</th>
+                        <th>Consumption</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for consumption_data in consumption_list %}
+                        <tr>
+                            <td>{{ consumption_data.datetime|date:"h:i A" }}</td>
+                            <td>{{ consumption_data.consumption }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td>no data</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+      const COLORS = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
+
+      const data = {
+        "datetime": [{% for data in consumption_list %}"{{ data.datetime|date:"h:i A" }}", {% endfor %}],
+        "consumption": [{% for data in consumption_list %}{{ data.consumption }}, {% endfor %}]
+      }
+
+      const ctx = document.getElementById("consumption-chart");
+      const chartData = {
+        labels: data.datetime,
+        datasets: [{
+          label: 'consumption',
+          data: data.consumption,
+          backgroundColor: 'transparent',
+          borderColor: COLORS[0],
+          pointBackgroundColor: COLORS[0]
+        }]
+      };
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            scales: {},
+            legend: {
+              display: false
+            },
+            responsive: true
+          }
+        });
+      }
+    </script>
 {% endblock %}

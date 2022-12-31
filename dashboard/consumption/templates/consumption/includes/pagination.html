@@ -1,0 +1,48 @@
+{% if pages.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if pages.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pages.previous_page_number }}">&laquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <div class="page-link disabled">&laquo;</div>
+                </li>
+            {% endif %}
+
+            {% if pages.has_previous %}
+                {% if pages.previous_page_number != 1 %}
+                    <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+                    <li class="page-item">…</li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pages.previous_page_number }}">{{ pages.previous_page_number }}</a>
+                </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <div class="page-link disabled" href="#">{{ pages.number }}</div>
+            </li>
+            {% if pages.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pages.next_page_number }}">{{ pages.next_page_number }}</a>
+                </li>
+                {% if pages.next_page_number != pages.paginator.num_pages %}
+                    <li class="page-item">…</li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pages.paginator.num_pages }}">{{ pages.paginator.num_pages }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% if pages.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pages.next_page_number }}">&raquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <div class="page-link disabled" href="#">&raquo;</div>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

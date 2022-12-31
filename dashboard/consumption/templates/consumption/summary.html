@@ -1,7 +1,99 @@
 {% extends 'consumption/layout.html' %}
 
 {% block content %}
+    <div>
+        <div class="mb-3">
+            <div class="h1">Summary</div>
+            <div>
+                <div class="h2">consumption (per date)</div>
+                <canvas id="consumption-chart"></canvas>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="h2">users</div>
+            {% include "consumption/includes/pagination.html" %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>UserID</th>
+                    <th>area</th>
+                    <th>tariff</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>
+                            <a href="{% url "consumption:detail" user_id=user.id %}">
+                                {{ user.id }}
+                            </a>
+                        </td>
+                        <td>{{ user.area }}</td>
+                        <td>{{ user.tariff }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>no data</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+      const COLORS = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
 
-<h1>{{message}}</h1>
+      const data = {
+        "datetime": [{% for data in aggregate_consumption %}"{{ data.date|date:"Y-m-d" }}", {% endfor %}],
+        "total": [{% for data in aggregate_consumption %}{{ data.total }}, {% endfor %}],
+        "average": [{% for data in aggregate_consumption %}{{ data.average }}, {% endfor %}]
+      }
 
+      const ctx = document.getElementById("consumption-chart");
+      const chartData = {
+        labels: data.datetime,
+        datasets: [
+          {
+            label: 'total',
+            data: data.total,
+            backgroundColor: 'transparent',
+            borderColor: COLORS[0],
+            pointBackgroundColor: COLORS[0],
+            yAxisID: 'y',
+          },
+          {
+            label: 'average',
+            data: data.average,
+            backgroundColor: 'transparent',
+            borderColor: COLORS[1],
+            pointBackgroundColor: COLORS[1],
+            yAxisID: 'y1',
+          },
+        ]
+      };
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            scales: {
+              'y': {
+                type: 'linear',
+                display: true,
+                position: 'left'
+              },
+              'y1': {
+                type: 'linear',
+                display: true,
+                position: 'right'
+              }
+            },
+            legend: {
+              display: false
+            },
+            responsive: true,
+          }
+        });
+      }
+    </script>
 {% endblock %}
