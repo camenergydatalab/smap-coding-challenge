@@ -1,8 +1,10 @@
 import csv
 import glob
 import os
+from datetime import datetime
 
 from django.core.management.base import BaseCommand
+from django.utils.timezone import make_aware
 
 from consumption.models import UserData, ConsumptionData
 
@@ -26,7 +28,8 @@ class Command(BaseCommand):
         # データ読み込み
         consumption_data_dir_path = options['consumption']
         if consumption_data_dir_path:
-            for data_file_path in glob.glob(consumption_data_dir_path + r"\\*.csv"):
+            csv_file_paths = get_csv_file_paths(consumption_data_dir_path)
+            for data_file_path in csv_file_paths:
                 data = data_from_csv_file(data_file_path)
 
                 # データの保存
@@ -37,6 +40,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-u', '--user', type=str)
         parser.add_argument('-c', '--consumption', type=str)
+
+
+def get_csv_file_paths(dir_path):
+    return glob.glob(dir_path + r"\\*.csv")
 
 
 def store_user_data(data: list):
@@ -57,6 +64,13 @@ def store_consumption_data(user_id: str, data: list):
         [{"datetime": "YYYY-mm-DD HH:MM:SS", "consumption": float}]
     :return: None
     """
+
+    create_data = []
+    for item in data:
+        item["datetime"] = make_aware(datetime.strptime(item["datetime"], "%Y-%m-%d %H:%M:%S"))
+        consumption_data = ConsumptionData(user_id=user_id, **item)
+        create_data.append(consumption_data)
+
     ConsumptionData.objects.bulk_create([ConsumptionData(user_id=user_id, **item) for item in data])
 
 
