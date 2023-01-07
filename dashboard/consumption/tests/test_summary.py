@@ -24,7 +24,7 @@ class ContextDataTests(TestCase):
         return response
 
     def test_empty_user_data(self):
-        """ ユーザデータが未登録の場合 """
+        """ユーザデータが未登録の場合"""
         request = RequestFactory().get("/summary/")
         response = self.get_response(request)
         context_data = response.context_data
@@ -32,31 +32,40 @@ class ContextDataTests(TestCase):
         self.assertQuerysetEqual(context_data["aggregate_consumption"], [])
 
     def test_user_data(self):
-        """ ユーザデータが含まれること """
+        """ユーザデータが含まれること"""
         UserData.objects.create(id="1000", area="a1", tariff="t1")
         request = RequestFactory().get("/summary/")
         response = self.get_response(request)
         context_data = response.context_data
-        self.assertQuerysetEqual(context_data["users"], [1000], transform=attrgetter("id"))
+        self.assertQuerysetEqual(
+            context_data["users"], [1000], transform=attrgetter("id")
+        )
         self.assertQuerysetEqual(context_data["aggregate_consumption"], [])
 
     def test_user_data_pagination(self):
-        """ ページネーションテスト """
-        UserData.objects.bulk_create([
-            UserData(id=user_id, area="a1", tariff="t1") for user_id in range(1000, 1021)
-        ])
+        """ページネーションテスト"""
+        UserData.objects.bulk_create(
+            [
+                UserData(id=user_id, area="a1", tariff="t1")
+                for user_id in range(1000, 1021)
+            ]
+        )
         request = RequestFactory().get("/summary/")
         response = self.get_response(request)
         context_data = response.context_data
-        self.assertQuerysetEqual(context_data["users"], list(range(1000, 1020)), transform=attrgetter("id"))
+        self.assertQuerysetEqual(
+            context_data["users"], list(range(1000, 1020)), transform=attrgetter("id")
+        )
 
         request = RequestFactory().get("/summary/", data={"page": "2"})
         response = self.get_response(request)
         context_data = response.context_data
-        self.assertQuerysetEqual(context_data["users"], [1020], transform=attrgetter("id"))
+        self.assertQuerysetEqual(
+            context_data["users"], [1020], transform=attrgetter("id")
+        )
 
     def test_aggregate_consumption(self):
-        """ 日付ごとの消費量集計データが含まれること """
+        """日付ごとの消費量集計データが含まれること"""
         UserData.objects.create(id="1000", area="a1", tariff="t1")
         UserData.objects.create(id="1001", area="a1", tariff="t1")
 
@@ -67,13 +76,18 @@ class ContextDataTests(TestCase):
 
         # 1か月分のデータを作成 consumption 101 ~ 131
         create_data_num = 31
-        ConsumptionData.objects.bulk_create([
-            ConsumptionData(
-                user_id="1000",
-                datetime=dt_from_unixtime(now_unixtime + index * day_unixtime),  # １日ごとにインクリメントする
-                consumption=101 + index
-            ) for index in range(create_data_num)
-        ])
+        ConsumptionData.objects.bulk_create(
+            [
+                ConsumptionData(
+                    user_id="1000",
+                    datetime=dt_from_unixtime(
+                        now_unixtime + index * day_unixtime
+                    ),  # １日ごとにインクリメントする
+                    consumption=101 + index,
+                )
+                for index in range(create_data_num)
+            ]
+        )
 
         with self.subTest("1人分のユーザでデータ集計する"):
             request = RequestFactory().get("/summary/")
@@ -84,25 +98,28 @@ class ContextDataTests(TestCase):
             self.assertQuerysetEqual(
                 context_data["aggregate_consumption"],
                 [float(101 + index) for index in range(create_data_num)],
-                transform=lambda s: s["total"]
+                transform=lambda s: s["total"],
             )
 
             # average
             self.assertQuerysetEqual(
                 context_data["aggregate_consumption"],
                 [float(101 + index) for index in range(create_data_num)],
-                transform=lambda s: s["average"]
+                transform=lambda s: s["average"],
             )
 
         with self.subTest("2人目のユーザでデータ集計する"):
             # 別ユーザの1か月分のデータを作成 consumption 201 ~ 231
-            ConsumptionData.objects.bulk_create([
-                ConsumptionData(
-                    user_id="1001",
-                    datetime=dt_from_unixtime(now_unixtime + index * day_unixtime),
-                    consumption=201 + index
-                ) for index in range(create_data_num)
-            ])
+            ConsumptionData.objects.bulk_create(
+                [
+                    ConsumptionData(
+                        user_id="1001",
+                        datetime=dt_from_unixtime(now_unixtime + index * day_unixtime),
+                        consumption=201 + index,
+                    )
+                    for index in range(create_data_num)
+                ]
+            )
             request = RequestFactory().get("/summary/")
             response = self.get_response(request)
             context_data = response.context_data
@@ -111,14 +128,14 @@ class ContextDataTests(TestCase):
             self.assertQuerysetEqual(
                 context_data["aggregate_consumption"],
                 [float(302 + index * 2) for index in range(create_data_num)],
-                transform=lambda s: s["total"]
+                transform=lambda s: s["total"],
             )
 
             # average
             self.assertQuerysetEqual(
                 context_data["aggregate_consumption"],
                 [float((302 + index * 2) / 2) for index in range(create_data_num)],
-                transform=lambda s: s["average"]
+                transform=lambda s: s["average"],
             )
 
 
@@ -133,20 +150,22 @@ class TemplateTests(TestCase):
         return response
 
     def test_empty_user_data(self):
-        """ ユーザデータが未登録の場合 """
+        """ユーザデータが未登録の場合"""
         request = RequestFactory().get("/summary/")
         response = self.get_response(request)
         response.render()
         self.assertInHTML("<td>no data</td>", str(response.content))
 
     def test_user_data(self):
-        """ ユーザデータがある場合 """
+        """ユーザデータがある場合"""
         UserData.objects.create(id="1000", area="a1", tariff="t1")
 
         request = RequestFactory().get("/summary/")
         response = self.get_response(request)
         response.render()
-       
-        self.assertInHTML(r"""<a href="/detail/1000/">\n 1000\n</a>""", str(response.content))
+
+        self.assertInHTML(
+            r"""<a href="/detail/1000/">\n 1000\n</a>""", str(response.content)
+        )
         self.assertInHTML("<td>a1</td>", str(response.content))
         self.assertInHTML("<td>t1</td>", str(response.content))

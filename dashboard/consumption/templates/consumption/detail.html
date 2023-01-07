@@ -33,7 +33,7 @@
                             <button class="h2 btn">&raquo;</button>
                         {% endif %}
                         <select onchange="location.href=`?current_date=${this.value}`">
-                            {% for date in date_list %}
+                            {% for date in date_list reversed %}
                                 <option value="{{ date }}" {% if date == current_date %}selected{% endif %}>{{ date }}</option>
                             {% endfor %}
                         </select>

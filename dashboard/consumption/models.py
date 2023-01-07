@@ -13,3 +13,10 @@ class ConsumptionData(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     datetime = models.DateTimeField(null=False, blank=False)
     consumption = models.FloatField(null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "datetime"], name="consumption_data_unique"
+            ),
+        ]
