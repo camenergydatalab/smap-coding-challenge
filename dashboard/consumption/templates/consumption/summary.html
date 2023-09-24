@@ -1,7 +1,98 @@
-{% extends 'consumption/layout.html' %}
+{% extends 'consumption/layout.html' %} {% load humanize %} {% block content %}
+<h1>Summary(日次)</h1>
 
-{% block content %}
+<div>
+  <canvas id="totalConsumptionChart" width="800" height="400"></canvas>
+</div>
 
-<h1>{{message}}</h1>
+<div>
+  <canvas id="averageConsumptionChart" width="800" height="400"></canvas>
+</div>
 
+<table border="1">
+  <tr>
+    <th>日付</th>
+    <th>合計消費量 (Wh)</th>
+    <th>30分間の平均消費量 (Wh)</th>
+  </tr>
+  {% for data in date_wise_consumption_data|dictsortreversed:"date" %}
+  <tr>
+    <td>{{ data.date|date:"Y-m-d" }}</td>
+    <td>{{ data.total_consumption|intcomma }}</td>
+    <td>{{ data.average_consumption|floatformat:"-1"|intcomma }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>ユーザー一覧</h2>
+
+<table border="1">
+  <tr>
+    <th>ユーザーID</th>
+    <th>料金</th>
+    <th>エリア</th>
+    <th>詳細</th>
+  </tr>
+  {% for user in users %}
+  <tr>
+    <td>{{ user.id }}</td>
+    <td>{{ user.tariff }}</td>
+    <td>{{ user.area }}</td>
+    <td><a href="{% url 'detail' user_id=user.id %}">詳細</a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  var totalCtx = document.getElementById('totalConsumptionChart').getContext('2d');
+  var averageCtx = document.getElementById('averageConsumptionChart').getContext('2d');
+  var dates = [{% for data in date_wise_consumption_data %}'{{ data.date }}', {% endfor %}];
+  var totalConsumption = [{% for data in date_wise_consumption_data %}{{ data.total_consumption }}, {% endfor %}];
+  var averageConsumption = [{% for data in date_wise_consumption_data %}{{ data.average_consumption }}, {% endfor %}];
+
+  var totalChart = new Chart(totalCtx, {
+      type: 'bar',
+      data: {
+          labels: dates,
+          datasets: [{
+              label: '合計消費量 (Wh)',
+              data: totalConsumption,
+              backgroundColor: 'rgba(0, 0, 255, 0.2)',
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+
+  var averageChart = new Chart(averageCtx, {
+      type: 'line',
+      data: {
+          labels: dates,
+          datasets: [{
+              label: '30分間の平均消費量 (Wh)',
+              data: averageConsumption,
+              borderColor: 'green',
+              backgroundColor: 'rgba(0, 255, 0, 0.2)',
+              fill: true,
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
 {% endblock %}
