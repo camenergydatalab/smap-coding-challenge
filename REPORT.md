@@ -6,9 +6,9 @@
 | 論理名 | 物理名 | データ型 | not nul 制約 | ユニーク 制約 | 
 | ---- | ---- | ---- | ---- | ---- |
 | エリアID | id | integer | ◯ |  ◯ | 
-| エリア | area | char(2) | ◯ |  |
-| 登録日時 | insert_datetime | datetime | ◯ |  |
-| 更新日時 | update_datetime | datetime | ◯ |  |
+| エリア名 | name | char(2) | ◯ |  |
+| 登録日時 | created_at | datetime | ◯ |  |
+| 更新日時 | updated_at | datetime | ◯ |  |
 
 ### 料金表 テーブル
 
@@ -16,8 +16,8 @@
 | ---- | ---- | ---- | ---- | ---- |
 | 料金ID | id | integer | ◯ |  ◯ | 
 | 料金プラン | plan | char(2) | ◯ |  |
-| 登録日時 | insert_datetime | datetime | ◯ |  |
-| 更新日時 | update_datetime | datetime | ◯ |  |
+| 登録日時 | created_at | datetime | ◯ |  |
+| 更新日時 | updated_at | datetime | ◯ |  |
 
 ### ユーザ テーブル
 
@@ -26,8 +26,8 @@
 | ユーザID | id | integer | ◯ | ◯ |  |
 | エリア | area | integer | ◯ |  | エリア テーブル.id |
 | 料金表 | tariff | integer | ◯ | | 料金表 テーブル.id |
-| 登録日時 | insert_datetime | datetime | ◯ |  |
-| 更新日時 | update_datetime | datetime | ◯ |  |
+| 登録日時 | created_at | datetime | ◯ |  |
+| 更新日時 | updated_at | datetime | ◯ |  |
 
 ### 消費データ テーブル
 
