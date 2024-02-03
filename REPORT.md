@@ -104,7 +104,7 @@ CONSUMPTION_DIRCTORY = 消費データディレクトリへのパス
 - 加工済み消費データディレクトリへのパス
 
 ```
-CONSUMPTION_DIRCTORY = 消費データディレクトリへのパス
+PREPROCESSED_CONSUMPTION_DIRCTORY = 消費データディレクトリへのパス
 ```
 
 ### ユーザデータ / 消費量データの投入について
