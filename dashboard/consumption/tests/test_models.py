@@ -75,7 +75,7 @@ class ConsumptionTests(TestCase):
         Consumption.objects.create(
             user=self.user,
             datetime=self.aware_datetime,
-            consumption=39.0
+            value=39.0
         )
 
     def test_user_datetime_unique(self):
@@ -84,5 +84,5 @@ class ConsumptionTests(TestCase):
             Consumption.objects.create(
                 user=self.user,
                 datetime=self.aware_datetime,
-                consumption=39.0
+                value=39.0
             )

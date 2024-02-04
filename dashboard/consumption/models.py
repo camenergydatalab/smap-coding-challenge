@@ -41,7 +41,7 @@ class Consumption(models.Model):
     """消費データ"""
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     datetime = models.DateTimeField()
-    consumption = models.DecimalField(max_digits=10, decimal_places=2)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         constraints = [

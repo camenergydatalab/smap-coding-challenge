@@ -35,7 +35,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 | ユーザID | user | integer | ◯ | ユーザ テーブル.id |
 | 日時 | datetime | datetime | ◯ | |
-| 消費量 | consumption | decimal(10, 2) | ◯ | |
+| 消費量 | value | decimal(10, 2) | ◯ | |
 
 #### 複合ユニークキーの設定
 - 同じユーザ名に対して、ある日時のデータは、1件とするため、ユーザID / 日時 の２つを用いて、複合ユニークキーとする
@@ -57,10 +57,13 @@
 
 | データ名 | エラー形式 | メッセージ |
 | ---- | ---- | ---- |
-| 日時 | 未入力 |  |
-| 日時 | 形式 | |
-| 使用量 | 未入力 | |
-| 使用量 | 形式 | |
+| ユーザ | 未入力 | * This field is required. |
+| ユーザ | 不正値 | * Select a valid choice. That choice is not one of the available choices. |
+| 日時 | 未入力 | * This field is required. |
+| 日時 | 形式 | * Consumption with this User and Datetime already exists. |
+| ユーザ - 日時 | 重複 | |
+| 使用量 | 未入力 | * This field is required. |
+| 使用量 | 形式 | * Ensure that there are no more than 8 digits before the decimal point. |
 
 ## 機能実装について
 
