@@ -55,7 +55,7 @@ class UserTests(TestCase):
             User(id=5002, area=self.area, tariff=self.tariff),
         ]
 
-        User.objects.bulk_create(users) 
+        User.objects.bulk_create(users)
         self.assertEqual(User.objects.all().count(), 4)
 
 
@@ -83,19 +83,19 @@ class ConsumptionTests(TestCase):
             Consumption(
                 user=self.user,
                 datetime=timezone.make_aware(datetime(2016, 7, 15, 1, 0, 0)),
-                value=39.0
+                value=39.0,
             ),
             Consumption(
                 user=self.user,
                 datetime=timezone.make_aware(datetime(2016, 7, 15, 2, 0, 0)),
-                value=39.0
+                value=39.0,
             ),
             Consumption(
                 user=self.user,
                 datetime=timezone.make_aware(datetime(2016, 7, 15, 3, 0, 0)),
-                value=39.0
+                value=39.0,
             ),
         ]
 
-        Consumption.objects.bulk_create(consumptions) 
+        Consumption.objects.bulk_create(consumptions)
         self.assertEqual(Consumption.objects.all().count(), 4)
