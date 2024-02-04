@@ -7,14 +7,12 @@ from .models import Consumption, User
 
 
 class UserForm(forms.ModelForm):
-
     class Meta:
         model = User
-        fields = ('id', 'area', 'tariff')
+        fields = ("id", "area", "tariff")
 
 
 class ConsumptionForm(forms.ModelForm):
-
     class Meta:
         model = Consumption
-        fields = ('user', 'datetime', 'value')
+        fields = ("user", "datetime", "value")

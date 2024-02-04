@@ -8,12 +8,11 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..init_datas import AREAS, TARIFFS
-from ..models import Area, Tariff, User, Consumption
+from ..models import Area, Consumption, Tariff, User
 
 
 # Create your tests here.
 class AreaTests(TestCase):
-
     def setUp(self):
         for _area in AREAS:
             Area.objects.create(name=_area[1])
@@ -24,7 +23,6 @@ class AreaTests(TestCase):
 
 
 class TariffTests(TestCase):
-
     def setUp(self):
         for _tariff in TARIFFS:
             Tariff.objects.create(plan=_tariff[1])
@@ -35,15 +33,10 @@ class TariffTests(TestCase):
 
 
 class UserTests(TestCase):
-
     def setUp(self):
         self.area = Area.objects.create(name="a1")
         self.tariff = Tariff.objects.create(plan="t1")
-        User.objects.create(
-            id=3000,
-            area=self.area,
-            tariff=self.tariff
-        )
+        User.objects.create(id=3000, area=self.area, tariff=self.tariff)
 
     def test_model_str(self):
         model = User.objects.get(id=3000)
@@ -52,37 +45,23 @@ class UserTests(TestCase):
     def test_unique_id(self):
         """IDが重複しているに発生するユニーク制約の例外確認"""
         with self.assertRaises(IntegrityError):
-            User.objects.create(
-                id=3000,
-                area=self.area,
-                tariff=self.tariff
-            )
+            User.objects.create(id=3000, area=self.area, tariff=self.tariff)
 
 
 class ConsumptionTests(TestCase):
-
     def setUp(self):
-
         self.aware_datetime = timezone.make_aware(datetime(2016, 7, 15, 0, 0, 0))
 
         self.area = Area.objects.create(name="a1")
         self.tariff = Tariff.objects.create(plan="t1")
-        self.user = User.objects.create(
-            id=3000,
-            area=self.area,
-            tariff=self.tariff
-        )
+        self.user = User.objects.create(id=3000, area=self.area, tariff=self.tariff)
         Consumption.objects.create(
-            user=self.user,
-            datetime=self.aware_datetime,
-            value=39.0
+            user=self.user, datetime=self.aware_datetime, value=39.0
         )
 
     def test_user_datetime_unique(self):
         """ユーザと日時が重複しているに発生するユニーク制約の例外確認"""
         with self.assertRaises(IntegrityError):
             Consumption.objects.create(
-                user=self.user,
-                datetime=self.aware_datetime,
-                value=39.0
+                user=self.user, datetime=self.aware_datetime, value=39.0
             )

@@ -8,12 +8,11 @@ from django.shortcuts import render
 
 def summary(request):
     context = {
-        'message': 'Hello!',
+        "message": "Hello!",
     }
-    return render(request, 'consumption/summary.html', context)
+    return render(request, "consumption/summary.html", context)
 
 
 def detail(request):
-    context = {
-    }
-    return render(request, 'consumption/detail.html', context)
+    context = {}
+    return render(request, "consumption/detail.html", context)

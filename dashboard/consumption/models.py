@@ -7,6 +7,7 @@ from django.db import models
 # Create your models here.
 class Area(models.Model):
     """エリア情報"""
+
     name = models.CharField(max_length=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -17,6 +18,7 @@ class Area(models.Model):
 
 class Tariff(models.Model):
     """料金表情報"""
+
     plan = models.CharField(max_length=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -27,6 +29,7 @@ class Tariff(models.Model):
 
 class User(models.Model):
     """ユーザ情報"""
+
     id = models.PositiveIntegerField(primary_key=True, unique=True)
     area = models.ForeignKey(Area, unique=False, on_delete=models.PROTECT)
     tariff = models.ForeignKey(Tariff, unique=False, on_delete=models.PROTECT)
@@ -39,6 +42,7 @@ class User(models.Model):
 
 class Consumption(models.Model):
     """消費データ"""
+
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     datetime = models.DateTimeField()
     value = models.DecimalField(max_digits=10, decimal_places=2)
@@ -46,7 +50,6 @@ class Consumption(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'datetime'],
-                name='user_datetime_unique'
+                fields=["user", "datetime"], name="user_datetime_unique"
             ),
         ]
