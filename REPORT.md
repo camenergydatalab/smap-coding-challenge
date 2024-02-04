@@ -3,21 +3,21 @@
 ## DB テーブル定義
 ### エリア テーブル
 
-| 論理名 | 物理名 | データ型 | not nul 制約 | ユニーク 制約 | 
-| ---- | ---- | ---- | ---- | ---- |
-| エリアID | id | integer | ◯ |  ◯ | 
-| エリア名 | name | char(2) | ◯ |  |
-| 登録日時 | created_at | datetime | ◯ |  |
-| 更新日時 | updated_at | datetime | ◯ |  |
+| 論理名 | 物理名 | データ型 | not nul 制約 | PRIMARY KEY 制約 | AUTOINCREMENT 属性 | 
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| エリアID | id | integer | ◯ | ◯ |  ◯ | 
+| エリア名 | name | varchar(2) | ◯ | |
+| 登録日時 | created_at | datetime | ◯ | | |
+| 更新日時 | updated_at | datetime | ◯ | | |
 
 ### 料金表 テーブル
 
-| 論理名 | 物理名 | データ型 | not nul 制約 | ユニーク 制約 | 
-| ---- | ---- | ---- | ---- | ---- |
-| 料金ID | id | integer | ◯ |  ◯ | 
+| 論理名 | 物理名 | データ型 | not nul 制約 | PRIMARY KEY 制約 | AUTOINCREMENT 属性 | 
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| 料金ID | id | integer | ◯ | ◯ | ◯ | |
 | 料金プラン | plan | char(2) | ◯ |  |
-| 登録日時 | created_at | datetime | ◯ |  |
-| 更新日時 | updated_at | datetime | ◯ |  |
+| 登録日時 | created_at | datetime | ◯ | | |
+| 更新日時 | updated_at | datetime | ◯ | | |
 
 ### ユーザ テーブル
 
@@ -33,9 +33,9 @@
 
 | 論理名 | 物理名 | データ型 | not nul 制約 | 外部キー | 
 | ---- | ---- | ---- | ---- | ---- |
-| ユーザID | user_id | integer | ◯ | ユーザ テーブル.id |
+| ユーザID | user | integer | ◯ | ユーザ テーブル.id |
 | 日時 | datetime | datetime | ◯ | |
-| 消費量 | consumption | double | ◯ | |
+| 消費量 | consumption | decimal(10, 2) | ◯ | |
 
 #### 複合ユニークキーの設定
 - 同じユーザ名に対して、ある日時のデータは、1件とするため、ユーザID / 日時 の２つを用いて、複合ユニークキーとする
