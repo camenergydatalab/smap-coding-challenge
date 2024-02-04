@@ -46,11 +46,12 @@
 
 | データ名 | エラー形式 | メッセージ |
 | ---- | ---- | ---- |
-| ユーザID | 未入力 | |
-| エリア | 未入力 | |
-| エリア | エリア テーブルに該当データがない | |
-| 料金表 | 未入力 | |
-| 料金表 | 料金表 テーブルに該当データがない | |
+| ユーザID | 未入力 | * This field is required. |
+| ユーザID | 重複 | * User with this Id already exists. |
+| エリア | 未入力 | * This field is required. |
+| エリア | 不正値 (エリア テーブルに該当データがない) | * Select a valid choice. That choice is not one of the available choices. |
+| 料金表 | 未入力 | * This field is required. |
+| 料金表 | 不正値 (料金表 テーブルに該当データがない) | * Select a valid choice. That choice is not one of the available choices. |
 
 ### 消費データ
 
