@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+dashboard/db.sqlite3
+dashboard/consumption/migrations/__pycache__/
