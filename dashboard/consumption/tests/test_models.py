@@ -47,6 +47,17 @@ class UserTests(TestCase):
         with self.assertRaises(IntegrityError):
             User.objects.create(id=3000, area=self.area, tariff=self.tariff)
 
+    def test_bulk_insert(self):
+        """バルクインサート"""
+        users = [
+            User(id=5000, area=self.area, tariff=self.tariff),
+            User(id=5001, area=self.area, tariff=self.tariff),
+            User(id=5002, area=self.area, tariff=self.tariff),
+        ]
+
+        User.objects.bulk_create(users) 
+        self.assertEqual(User.objects.all().count(), 4)
+
 
 class ConsumptionTests(TestCase):
     def setUp(self):
@@ -65,3 +76,26 @@ class ConsumptionTests(TestCase):
             Consumption.objects.create(
                 user=self.user, datetime=self.aware_datetime, value=39.0
             )
+
+    def test_bulk_insert(self):
+        """バルクインサート"""
+        consumptions = [
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 1, 0, 0)),
+                value=39.0
+            ),
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 2, 0, 0)),
+                value=39.0
+            ),
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 3, 0, 0)),
+                value=39.0
+            ),
+        ]
+
+        Consumption.objects.bulk_create(consumptions) 
+        self.assertEqual(Consumption.objects.all().count(), 4)
