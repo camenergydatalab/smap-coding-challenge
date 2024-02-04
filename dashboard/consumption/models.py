@@ -22,3 +22,15 @@ class Tariff(models.Model):
 
     def __str__(self):
         return self.plan
+
+
+class User(models.Model):
+    """ユーザ情報"""
+    id = models.PositiveIntegerField(primary_key=True, unique=True)
+    area = models.ForeignKey(Area, unique=False, on_delete=models.PROTECT)
+    tariff = models.ForeignKey(Tariff, unique=False, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
