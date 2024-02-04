@@ -46,7 +46,7 @@ class Consumption(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "datetime"],
-                name="user_datetime_unique"
+                fields=['user', 'datetime'],
+                name='user_datetime_unique'
             ),
         ]
