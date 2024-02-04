@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.utils import timezone
 
 from ..init_datas import AREAS, TARIFFS
-from ..models import Area, Tariff, User
+from ..models import Area, Tariff, User, Consumption
 
 
 # Create your tests here.
@@ -53,4 +56,33 @@ class UserTests(TestCase):
                 id=3000,
                 area=self.area,
                 tariff=self.tariff
+            )
+
+
+class ConsumptionTests(TestCase):
+
+    def setUp(self):
+
+        self.aware_datetime = timezone.make_aware(datetime(2016, 7, 15, 0, 0, 0))
+
+        self.area = Area.objects.create(name="a1")
+        self.tariff = Tariff.objects.create(plan="t1")
+        self.user = User.objects.create(
+            id=3000,
+            area=self.area,
+            tariff=self.tariff
+        )
+        Consumption.objects.create(
+            user=self.user,
+            datetime=self.aware_datetime,
+            consumption=39.0
+        )
+
+    def test_user_datetime_unique(self):
+        """ユーザと日時が重複しているに発生するユニーク制約の例外確認"""
+        with self.assertRaises(IntegrityError):
+            Consumption.objects.create(
+                user=self.user,
+                datetime=self.aware_datetime,
+                consumption=39.0
             )

@@ -34,3 +34,17 @@ class User(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+class Consumption(models.Model):
+    """消費データ"""
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    datetime = models.DateTimeField()
+    consumption = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "datetime"],
+                name="user_datetime_unique"
+            ),
+        ]
