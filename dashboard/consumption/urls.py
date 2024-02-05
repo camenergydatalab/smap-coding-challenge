@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url="summary", query_string=True)),
     url(r'^summary/$', views.summary, name="summary"),
     url(r'^detail/(\d+)$', views.detail, name="detail"),
+    url(r'^query$', views.query, name="query"),
 ]

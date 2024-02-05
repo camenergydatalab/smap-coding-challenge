@@ -5,12 +5,14 @@ import json
 from datetime import datetime
 from django.db import connection
 from django.shortcuts import render
+from django.urls import reverse
+from functools import partial
 from sqlalchemy import select, func, and_, literal_column
 from sqlalchemy.dialects.sqlite import dialect as _sqlite_dialect
 from typing import Optional, Union
 
 from .models import Consumer, consumption_table, consumer_table
-from .utils import explicitly_cached
+from .utils import explicitly_cached, make_json_response
 
 # make django happy
 sqlite_dialect = _sqlite_dialect(paramstyle="format")
@@ -21,17 +23,9 @@ AggDataRow = tuple[datetime, Union[int, float], int]
 def summary(request):
     area = request.GET.get("area")
     tariff = request.GET.get("tariff")
-    grouper_name = request.GET.get("grouper", "")
-    force_refresh = request.GET.get("force_refresh", "")
-    try:
-        grouper = GROUPERS[grouper_name]
-    except KeyError:
-        grouper = GROUPERS[""]
     consumers = list(Consumer.objects.all())
-    agg_func = calculate_agg_data
-    if force_refresh:
-        agg_func = agg_func.recache
-    agg_data = agg_func(grouper=grouper, area=area, tariff=tariff)
+    agg_func = agg_func_from_request(request)
+    agg_data = agg_func(area=area, tariff=tariff)
     areas = sorted(set(map(lambda x: x.area, consumers)))
     tariffs = sorted(set(map(lambda x: x.tariff, consumers)))
     context = {
@@ -41,6 +35,7 @@ def summary(request):
         "areas": areas,
         "tariff": tariff,
         "tariffs": tariffs,
+        "query_path": reverse("query"),
     }
     return render(request, 'consumption/summary.html', context)
 
@@ -49,6 +44,40 @@ def detail(request, id):
     context = {
     }
     return render(request, 'consumption/detail.html', context)
+
+
+def query(request):
+    try:
+        agg_func = agg_func_from_request(request)
+        consumer_id = request.GET.get("consumer_id")
+        if consumer_id:
+            try:
+                consumer_id = int(consumer_id)
+            except ValueError:
+                return make_json_response(
+                    None, status=400, errno=255,
+                    message="consumer_id must be an integer")
+            agg_data = agg_func(consumer_id=consumer_id)
+        else:
+            agg_data = agg_func(area=request.GET.get("area"),
+                                tariff=request.GET.get("tariff"))
+    except Exception:
+        return make_json_response(None, status=500, errno=255,
+                                  message="internal server error")
+    return make_json_response(agg_data)
+
+
+def agg_func_from_request(request):
+    force_refresh = request.GET.get("force_refresh", "")
+    grouper_name = request.GET.get("grouper", "")
+    try:
+        grouper = GROUPERS[grouper_name]
+    except KeyError:
+        grouper = GROUPERS[""]
+    agg_func = calculate_agg_data
+    if len(force_refresh) > 0:
+        agg_func = agg_func.recache
+    return partial(agg_func, grouper=grouper)
 
 
 # Unfortunately, Django is incompetent to build complex queries, which is

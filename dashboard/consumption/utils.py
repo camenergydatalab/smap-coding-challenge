@@ -2,8 +2,9 @@ import hashlib
 import json
 import logging
 from django.core.cache import cache
+from django.http import HttpResponse
 from io import BytesIO, TextIOWrapper
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 logger = logging.getLogger(__name__)
 
@@ -63,3 +64,18 @@ def explicitly_cached(*, cache_prefix: Optional[str] = None,
             cache_prefix_ = cache_prefix
         return ExplicitlyControlledCachedFunction(func, cache_prefix_, timeout)
     return decorator
+
+
+def make_json_response(data: Any, status: int = 200, errno: int = 0,
+                       message: str = "OK") -> HttpResponse:
+    rv = {
+        "errno": errno,
+        "message": message,
+        "data": data,
+    }
+    buf = BytesIO()
+    text_buf = TextIOWrapper(buf, encoding="utf-8")
+    json.dump(rv, text_buf, separators=(",", ":"), ensure_ascii=False)
+    text_buf.flush()
+    return HttpResponse(buf.getvalue(), content_type="application/json",
+                        status=status)

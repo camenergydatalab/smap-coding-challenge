@@ -9,7 +9,8 @@
 <body>
 {% block content %}{% endblock %}
 <script>
-const aggData = {{ agg_data_json|safe }};
+let aggData = {{ agg_data_json|safe }};
+const queryPath = "{{ query_path }}";
 </script>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
 <script src="{% static 'consumption/app.js' %}" ></script>
