@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import json
 from datetime import datetime
 from django.db import connection
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from functools import partial
 from sqlalchemy import select, func, and_, literal_column
@@ -41,7 +41,13 @@ def summary(request):
 
 
 def detail(request, id):
+    consumer = get_object_or_404(Consumer, id=int(id))
+    agg_func = agg_func_from_request(request)
+    agg_data = agg_func(consumer_id=id)
     context = {
+        "consumer": consumer,
+        "agg_data_json": json.dumps(agg_data),
+        "query_path": reverse("query"),
     }
     return render(request, 'consumption/detail.html', context)
 
@@ -88,7 +94,7 @@ def agg_func_from_request(request):
 @explicitly_cached(timeout=86400 * 30)
 def calculate_agg_data(*, grouper: str,
                        area: Optional[str] = None, tariff: Optional[str] = None,
-                       ) -> list[AggDataRow]:
+                       consumer_id: int = None) -> list[AggDataRow]:
     where_clause_elems = []
     if area:
         where_clause_elems.append(consumer_table.c.area == area)
@@ -101,6 +107,10 @@ def calculate_agg_data(*, grouper: str,
                             == consumption_table.c.consumer_id))
     else:
         select_from = consumption_table
+
+    if consumer_id is not None:
+        where_clause_elems.append(
+            consumption_table.c.consumer_id == consumer_id)
 
     stmt = select(
             func.strftime(grouper, consumption_table.c.datetime).label("key"),

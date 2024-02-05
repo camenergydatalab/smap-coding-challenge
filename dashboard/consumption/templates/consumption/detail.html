@@ -1,5 +1,73 @@
 {% extends 'consumption/layout.html' %}
 
-{% block content %}
+{% block title %}契約者 {{ consumer.id }}{% endblock title %}
 
-{% endblock %}
+{% block content %}
+<header>
+  <div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+      <li class="pure-menu-item">
+        <a class="pure-menu-link" href="{% url 'summary' %}">概要</a>
+      </li>
+      <li class="pure-menu-item">
+        <a class="pure-menu-link" href="#">契約者 {{ consumer.id }}</a>
+      </li>
+      <li class="pure-menu-item">
+        <span>&gt;</span>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="content">
+
+<h1>契約者 {{ consumer.id }}</h1>
+<table>
+<tr>
+  <th>Area</th>
+  <td>{{ consumer.area }}</td>
+</tr>
+<tr>
+  <th>Tariff</th>
+  <td>{{ consumer.tariff }}</td>
+</tr>
+</table>
+
+<h2>合計消費量/kWh</h2>
+<form id="query-form">
+  <input type="hidden" name="consumer_id" value="{{ consumer.id }}">
+  <div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+      <li class="pure-menu-item">
+        <label class="pure-menu-link">
+          <span>分割方法</span>
+          <select name="grouper">
+            <option value="" {% if request.GET.grouper == '' %} selected{% endif %}>日ごと合計</option>
+            <option value="hourly-by-day" {% if request.GET.grouper == 'hourly-by-day' %} selected{% endif %}>一日中時間ごと合計</option>
+            <option value="monthly-by-year" {% if request.GET.grouper == 'monthly-by-year' %} selected{% endif %}>一年中月ごと合計</option>
+            <option value="no" {% if request.GET.grouper == 'no' %} selected{% endif %}>30分ごと合計</option>
+          </select>
+        </label>
+      </li>
+      <li class="pure-menu-item">
+        <label class="pure-menu-link">
+          <span>キャッシュクリア</span>
+          <input type="checkbox" name="force_refresh" value="1">
+        </label>
+      </li>
+      <li class="pure-menu-item">
+        <button type="submit" class="pure-menu-link pure-button">Go</button>
+      </li>
+    </ul>
+  </div>
+</form>
+<div id="plot-sum"></div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+setupPlot(document.getElementById("plot-sum"), ([_, sum, __]) => (
+  sum / 1000
+));
+</script>
+{% endblock scripts %}
