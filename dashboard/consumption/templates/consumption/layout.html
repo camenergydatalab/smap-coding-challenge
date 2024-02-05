@@ -1,8 +1,18 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    {% block content %}{% endblock content %}
-  </body>
+<html lang="ja">
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'consumption/style.css' %}" >
+<title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+{% block content %}{% endblock %}
+<script>
+const aggData = {{ agg_data_json|safe }};
+</script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script src="{% static 'consumption/app.js' %}" ></script>
+{% block scripts %}{% endblock %}
+</body>
 </html>

@@ -1,7 +1,112 @@
 {% extends 'consumption/layout.html' %}
 
+{% block title %}概要{% endblock title %}
+
 {% block content %}
+<header>
+  <div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+      <li class="pure-menu-item">
+        <a class="pure-menu-link" href="#">概要</a>
+      </li>
+      <li class="pure-menu-item">
+        <span>&gt;</span>
+      </li>
+    </ul>
+  </div>
+</header>
 
-<h1>{{message}}</h1>
+<div class="content">
+<h1>概要</h1>
 
-{% endblock %}
+<div class="pure-g">
+  <form id="query-form" class="pure-u-1-1">
+    <div class="pure-menu pure-menu-horizontal">
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+          <label class="pure-menu-link">
+            <span>Area</span>
+            <select name="area">
+              <option value="">未選択</option>
+            {% for area in areas %}
+              <option value="{{ area }}"{% if request.GET.area == area %} selected{% endif %}>{{ area }}</option>
+            {% endfor %}
+            </select>
+          </label>
+        </li>
+        <li class="pure-menu-item">
+          <label class="pure-menu-link">
+            <span>Tariff</span>
+            <select name="tariff">
+              <option value="">未選択</option>
+            {% for tariff in tariffs %}
+              <option value="{{ tariff }}"{% if request.GET.tariff == tariff %} selected{% endif %}>{{ tariff }}</option>
+            {% endfor %}
+            </select>
+          </label>
+        </li>
+        <li class="pure-menu-item">
+          <label class="pure-menu-link">
+            <span>分割方法</span>
+            <select name="grouper">
+              <option value="" {% if request.GET.grouper == '' %} selected{% endif %}>日ごと合計</option>
+              <option value="hourly-by-day" {% if request.GET.grouper == 'hourly-by-day' %} selected{% endif %}>一日中時間ごと合計</option>
+              <option value="monthly-by-year" {% if request.GET.grouper == 'monthly-by-year' %} selected{% endif %}>一年中月ごと合計</option>
+              <option value="no" {% if request.GET.grouper == 'no' %} selected{% endif %}>30分ごと合計</option>
+            </select>
+          </label>
+        </li>
+        <li class="pure-menu-item">
+          <label class="pure-menu-link">
+            <span>キャッシュクリア</span>
+            <input type="checkbox" name="force_refresh" value="1">
+          </label>
+        </li>
+        <li class="pure-menu-item">
+          <button type="submit" class="pure-menu-link pure-button">Go</button>
+        </li>
+      </ul>
+    </div>
+  </form>
+  <div class="pure-u-1-2">
+    <h2>合計消費量/kWh</h2>
+    <div id="plot-sum"></div>
+  </div>
+  <div class="pure-u-1-2">
+    <h2>平均消費量/kWh</h2>
+    <div id="plot-avg"></div>
+  </div>
+</div>
+
+<h2>契約者一覧</h2>
+<table class="pure-table pure-table-striped">
+<thead>
+{# I have no idea about what "tariff" means #}
+<tr>
+  <th>契約者ID</th>
+  <th>Area</th>
+  <th>Tariff</th>
+</tr>
+</thead>
+<tbody>
+{% for consumer in consumers %}
+  <tr>
+    <td><a href="{% url 'detail' consumer.id %}">{{ consumer.id }}</a></td>
+    <td>{{ consumer.area }}</td>
+    <td>{{ consumer.tariff }}</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+setupPlot(document.getElementById("plot-sum"), ([_, sum, __]) => (
+  sum / 1000
+));
+setupPlot(document.getElementById("plot-avg"), ([_, sum, count]) => (
+  sum / 1000 / count
+));
+</script>
+{% endblock scripts %}

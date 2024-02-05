@@ -5,6 +5,9 @@ from django.db.models import (
     Model, ForeignKey, PROTECT,
     BigAutoField, CharField, DecimalField, DateTimeField,
 )
+from django.db.models.fields.related import RelatedField
+from sqlalchemy import table, column, TableClause
+from typing import Type
 
 
 # Why not simply `User`?
@@ -35,3 +38,21 @@ class Consumption(Model):
     # We have no idea about the precision of the metre yet, but the data seem
     # to be decimal
     amount = DecimalField(null=False, decimal_places=2, max_digits=8)  # in Wh
+
+
+def _mk_sqlalchemy_table_from_django_model(cls: Type[Model]) -> TableClause:
+    table_name = cls._meta.db_table
+    cols = []
+    for field in cls._meta.fields:
+        if isinstance(field, ForeignKey):
+            name = field.name + "_id"
+        elif isinstance(field, RelatedField):
+            raise ValueError(f"Cannot convert field {field!r}")
+        else:
+            name = field.name
+        cols.append(column(name))
+    return table(table_name, *cols)
+
+
+consumer_table = _mk_sqlalchemy_table_from_django_model(Consumer)
+consumption_table = _mk_sqlalchemy_table_from_django_model(Consumption)
