@@ -15,4 +15,4 @@ class UserForm(forms.ModelForm):
 class ConsumptionForm(forms.ModelForm):
     class Meta:
         model = Consumption
-        fields = ("user", "datetime", "value")
+        fields = ("datetime", "value")
