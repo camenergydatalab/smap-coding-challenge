@@ -118,8 +118,7 @@ class Command(BaseCommand):
         preprocessed_csv_files = os.listdir(PREPROCESSED_CONSUMPTION_DIR)
 
         for file_name in preprocessed_csv_files:
-
-            if file_name == 'empty':
+            if file_name == "empty":
                 continue
 
             file_path = os.path.join(PREPROCESSED_CONSUMPTION_DIR, file_name)
@@ -187,8 +186,7 @@ class Command(BaseCommand):
         preprocessed_csv_files = os.listdir(PREPROCESSED_CONSUMPTION_DIR)
 
         for file_name in preprocessed_csv_files:
-
-            if file_name == 'empty':
+            if file_name == "empty":
                 continue
 
             file_path = os.path.join(PREPROCESSED_CONSUMPTION_DIR, file_name)
