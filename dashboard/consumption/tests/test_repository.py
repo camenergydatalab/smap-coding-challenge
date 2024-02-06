@@ -50,24 +50,24 @@ class ConsumptionRepositoryTest(TestCase):
         self.user = User.objects.create(id=3000, area=self.area, tariff=self.tariff)
 
     def test_bulk_insert(self):
-        consumptions = [
-            {
-                "user": self.user,
-                "datetime": timezone.make_aware(datetime(2016, 7, 15, 0, 0, 0)),
-                "value": 100.0,
-            },
-            {
-                "user": self.user,
-                "datetime": timezone.make_aware(datetime(2016, 7, 15, 0, 30, 0)),
-                "value": 200.0,
-            },
-            {
-                "user": self.user,
-                "datetime": timezone.make_aware(datetime(2016, 7, 15, 1, 0, 0)),
-                "value": 300.0,
-            },
+        consumption_models = [
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 0, 0, 0)),
+                value=100.0,
+            ),
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 0, 30, 0)),
+                value=200.0,
+            ),
+            Consumption(
+                user=self.user,
+                datetime=timezone.make_aware(datetime(2016, 7, 15, 1, 0, 0)),
+                value=300.0,
+            ),
         ]
 
-        ConsumptionRepository.bulk_insert(consumptions)
+        ConsumptionRepository.bulk_insert(consumption_models)
 
         self.assertEqual(Consumption.objects.all().count(), 3)
