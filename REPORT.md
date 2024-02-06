@@ -57,11 +57,8 @@
 
 | データ名 | エラー形式 | メッセージ |
 | ---- | ---- | ---- |
-| ユーザ | 未入力 | * This field is required. |
-| ユーザ | 不正値 | * Select a valid choice. That choice is not one of the available choices. |
 | 日時 | 未入力 | * This field is required. |
 | 日時 | 形式 | * Consumption with this User and Datetime already exists. |
-| ユーザ - 日時 | 重複 | |
 | 使用量 | 未入力 | * This field is required. |
 | 使用量 | 形式 | * Ensure that there are no more than 8 digits before the decimal point. |
 
@@ -111,6 +108,18 @@ CONSUMPTION_DIR = 消費データディレクトリへのパス
 PREPROCESSED_CONSUMPTION_DIR = 消費データディレクトリへのパス
 ```
 
+- テスト用の消費データディレクトリへのパス
+
+```
+TEST_CONSUMPTION_DIR = テスト用の消費データディレクトリへのパス
+```
+
+- テスト用の加工済み消費データディレクトリへのパス
+
+```
+TEST_PREPROCESSED_CONSUMPTION_DIR = テスト用の加工済み消費データディレクトリへのパス
+```
+
 ### ユーザデータ / 消費量データの投入について
 
 - 既存データの全削除
@@ -121,7 +130,7 @@ PREPROCESSED_CONSUMPTION_DIR = 消費データディレクトリへのパス
 - ユーザデータのバリデーション
 - 消費データのバリデーション
 - ユーザデータの登録を行う
-    - 100件でバルクインサートを試みる
+    - 全件バルクインサートを試みる
 - 消費データの登録を行う
     - 各ファイルで、1000件単位でバルクインサートを試みる
 
@@ -194,6 +203,7 @@ PREPROCESSED_CONSUMPTION_DIR = 消費データディレクトリへのパス
         - pandasを利用して、欠損データの補完を行う
         - 使用量の補完は、1つ前のレコードのデータを用いてる
             - １つ目のデータを使用する理由は、連続使用の際に変動が少ないと見込めるため
+
 
 # 質問事項
 
