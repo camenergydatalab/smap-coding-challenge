@@ -183,6 +183,7 @@ class Command(BaseCommand):
 
     def delete_preprocess_consumption_csv_file(self):
         """前処理を施した消費CSVファイルの削除"""
+        print("=== 前処理を施した消費CSVファイルの削除 開始 ===")
         preprocessed_csv_files = os.listdir(PREPROCESSED_CONSUMPTION_DIR)
 
         for file_name in preprocessed_csv_files:
@@ -193,25 +194,27 @@ class Command(BaseCommand):
             file_path = os.path.join(PREPROCESSED_CONSUMPTION_DIR, file_name)
             os.remove(file_path)
 
+        print("=== 前処理を施した消費CSVファイルの削除 終了 ===")
+
     def handle(self, *args, **options):
-        #self.init()
+        self.init()
 
-        #self.preprocess_consumption_data()
+        self.preprocess_consumption_data()
 
-        #self.validate_user_data()
+        self.validate_user_data()
 
-        #self.validate_consumption_data()
+        self.validate_consumption_data()
 
-        #try:
-        #    self.bulk_insert_user()
-        #except IntegrityError:
-        #    print("ユーザ登録にて、ユニーク制約違反が発生しました。")
-        #    sys.exit()
+        try:
+            self.bulk_insert_user()
+        except IntegrityError:
+            print("ユーザ登録にて、ユニーク制約違反が発生しました。")
+            sys.exit()
 
-        #try:
-        #    self.bulk_insert_consumption_data()
-        #except IntegrityError:
-        #    print("消費データにて、ユニーク制約違反が発生しました。")
-        #    sys.exit()
+        try:
+            self.bulk_insert_consumption_data()
+        except IntegrityError:
+            print("消費データにて、ユニーク制約違反が発生しました。")
+            sys.exit()
 
         self.delete_preprocess_consumption_csv_file()
