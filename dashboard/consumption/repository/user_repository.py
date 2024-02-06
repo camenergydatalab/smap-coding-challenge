@@ -6,19 +6,19 @@ from ..models import User
 
 class UserRepository:
     @staticmethod
-    def bulk_insert(users=[]):
+    def bulk_insert(user_models=[]):
         """ユーザデータの一括登録
         引数:
-            users: 以下の構造の辞書データの配列
-                id: ユーザID
-                area: エリアのオブジェクトデータ
-                tariff: 料金表のオブジェクトデータ
+            user_models: Userモデルのオブジェクト
         """
 
-        if len(users):
-            user_models = []
-
-            for u in users:
-                user_models.append(User(id=u["id"], area=u["area"], tariff=u["tariff"]))
-
+        if len(user_models):
             User.objects.bulk_create(user_models)
+
+    @staticmethod
+    def get_all():
+        """すべてのユーザデータを取得する
+        戻り値:
+            User.objects.all()のクエリセット
+        """
+        return User.objects.all()

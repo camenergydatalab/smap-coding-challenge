@@ -17,15 +17,30 @@ class UserRepositoryTest(TestCase):
         self.tariff = Tariff.objects.create(plan="t1")
 
     def test_bulk_insert(self):
-        users = [
-            {"id": 5000, "area": self.area, "tariff": self.tariff},
-            {"id": 5001, "area": self.area, "tariff": self.tariff},
-            {"id": 5002, "area": self.area, "tariff": self.tariff},
+        user_models = [
+            User(id=5000, area=self.area, tariff=self.tariff),
+            User(id=5001, area=self.area, tariff=self.tariff),
+            User(id=5002, area=self.area, tariff=self.tariff),
         ]
 
-        UserRepository.bulk_insert(users)
+        UserRepository.bulk_insert(user_models)
 
         self.assertEqual(User.objects.all().count(), 3)
+
+    def test_get_all(self):
+        User.objects.all().delete()
+
+        user_models = [
+            User(id=5000, area=self.area, tariff=self.tariff),
+            User(id=5001, area=self.area, tariff=self.tariff),
+            User(id=5002, area=self.area, tariff=self.tariff),
+        ]
+
+        UserRepository.bulk_insert(user_models)
+
+        users = UserRepository.get_all()
+
+        self.assertEqual(users.count(), 3)
 
 
 class ConsumptionRepositoryTest(TestCase):
