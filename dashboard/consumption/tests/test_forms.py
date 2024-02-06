@@ -90,7 +90,6 @@ class ConsumptionFormTests(TestCase):
         """入力チェックパス"""
         form = ConsumptionForm(
             {
-                "user": self.user.id,
                 "datetime": "2016-7-15 01:00:00",
                 "value": 99999999.99,
             }
@@ -103,7 +102,6 @@ class ConsumptionFormTests(TestCase):
         form = ConsumptionForm({})
 
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["user"].as_text(), "* This field is required.")
         self.assertEqual(form.errors["datetime"].as_text(), "* This field is required.")
         self.assertEqual(form.errors["value"].as_text(), "* This field is required.")
 
@@ -111,7 +109,6 @@ class ConsumptionFormTests(TestCase):
         """想定外の値の入力"""
         form = ConsumptionForm(
             {
-                "user": 0,
                 "datetime": "2016-2-30 00:00:00",
                 "value": 100000000.00,
             }
@@ -119,29 +116,9 @@ class ConsumptionFormTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertEqual(
-            form.errors["user"].as_text(),
-            "* Select a valid choice. That choice is not one of the available choices.",
-        )
-        self.assertEqual(
             form.errors["datetime"].as_text(), "* Enter a valid date/time."
         )
         self.assertEqual(
             form.errors["value"].as_text(),
             "* Ensure that there are no more than 8 digits before the decimal point.",
-        )
-
-    def test_invalid_unique_recode(self):
-        """ユーザ・日時重複"""
-        form = ConsumptionForm(
-            {
-                "user": self.user.id,
-                "datetime": self.aware_datetime,
-                "value": 100,
-            }
-        )
-
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors["__all__"].as_text(),
-            "* Consumption with this User and Datetime already exists.",
         )
