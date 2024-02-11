@@ -1,7 +1,62 @@
 {% extends 'consumption/layout.html' %}
 
 {% block content %}
+<section class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">summary</li>
+    </ol>
+  </nav>
+</section>
 
-<h1>{{message}}</h1>
+<section class="container">
+  <h1>サマリーページ</h1>
+</section>
 
+<section class="container">
+  <h3>集計期間 : {{ start_end_day.start }} 〜 {{ start_end_day.end }}</h3>
+</section>
+
+<section class="container">
+  <h3>月別総消費量</h3>
+  <canvas id="total-value-chart"></canvas>
+</section>
+
+<section class="container">
+  <h3>月別の1日あたりの平均消費量</h3>
+  <canvas id="daily-average-value-chart"></canvas>
+</section>
+
+<section class="container"></div>
+  <h3>ユーザ一覧</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="w-25">ユーザID</th>
+        <th>エリア</th>
+        <th>料金表プラン</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <th><a href="{% url 'consumption:detail' user.id %}">{{ user.id }}</a></th>
+        <th>{{ user.area }}</th>
+        <td>{{ user.tariff }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+<script>
+  // 月別総消費量折れ線グラフの表示
+  const total_value_ctx = document.getElementById('total-value-chart');
+  const total_value_chart_data_json = JSON.parse('{{ total_value_chart_data|safe }}');
+  display_line_chart(total_value_ctx, total_value_chart_data_json);
+
+  // 月別の1日あたりの平均消費量折れ線グラフの表示
+  const daily_average_value_ctx = document.getElementById('daily-average-value-chart');
+  const daily_average_value_chart_data_json = JSON.parse('{{ daily_average_value_chart_data|safe }}');
+  display_line_chart(daily_average_value_ctx, daily_average_value_chart_data_json);
+</script>
 {% endblock %}
