@@ -31,3 +31,14 @@ class ConsumptionCSVDataProcessorTest(TestCase):
         # 2016-07-15 01:30:00 を保管していることを確認
         df = df.set_index("datetime")
         self.assertEqual(df.loc["2016-07-15 01:30:00"]["consumption"], 10.0)
+
+    def tearDown(self):
+
+        csv_files = os.listdir(TEST_PREPROCESSED_CONSUMPTION_DIR)
+
+        for file_name in csv_files:
+            if file_name == "empty":
+                continue
+
+            file_path = os.path.join(TEST_PREPROCESSED_CONSUMPTION_DIR, file_name)
+            os.remove(file_path)
