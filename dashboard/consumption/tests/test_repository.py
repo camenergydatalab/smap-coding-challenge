@@ -49,6 +49,32 @@ class ConsumptionRepositoryTest(TestCase):
         self.tariff = Tariff.objects.create(plan="t1")
         self.user = User.objects.create(id=3000, area=self.area, tariff=self.tariff)
 
+    def set_test_data(self):
+        Consumption.objects.all().delete()
+
+        test_datetimes = [
+            timezone.make_aware(datetime(2016, 7, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 7, 1, 1, 0, 0)),
+            timezone.make_aware(datetime(2016, 7, 2, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 8, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 8, 2, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 9, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 9, 2, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 10, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 10, 2, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 11, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 11, 2, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 12, 1, 0, 0, 0)),
+            timezone.make_aware(datetime(2016, 12, 2, 0, 0, 0)),
+        ]
+
+        for d in test_datetimes:
+            Consumption.objects.create(
+                user=self.user,
+                datetime=d,
+                value=300.0,
+            )
+
     def test_bulk_insert(self):
         consumption_models = [
             Consumption(
@@ -71,3 +97,97 @@ class ConsumptionRepositoryTest(TestCase):
         ConsumptionRepository.bulk_insert(consumption_models)
 
         self.assertEqual(Consumption.objects.all().count(), 3)
+
+    def test_get_total_period_months(self):
+        """全集計期間月をリストで取得できるか"""
+
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_total_period_months(),
+            [
+                "2016-07",
+                "2016-08",
+                "2016-09",
+                "2016-10",
+                "2016-11",
+                "2016-12",
+            ],
+        )
+
+    def test_get_total_value_per_month(self):
+        """月別消費量を取得できるか"""
+
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_total_value_per_month(),
+            {
+                "2016-07": 900,
+                "2016-08": 600,
+                "2016-09": 600,
+                "2016-10": 600,
+                "2016-11": 600,
+                "2016-12": 600,
+            },
+        )
+
+    def test_get_daily_average_value_per_month(self):
+        """月別に1日あたりの平均消費量を取得できるか"""
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_daily_average_value_per_month(),
+            {
+                "2016-07": 300,
+                "2016-08": 300,
+                "2016-09": 300,
+                "2016-10": 300,
+                "2016-11": 300,
+                "2016-12": 300,
+            },
+        )
+
+    def test_get_total_value_per_month_by_user_id(self):
+        """ユーザIDを引数に月別消費量を取得できるか"""
+
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_total_value_per_month_by_user_id(self.user),
+            {
+                "2016-07": 900,
+                "2016-08": 600,
+                "2016-09": 600,
+                "2016-10": 600,
+                "2016-11": 600,
+                "2016-12": 600,
+            },
+        )
+
+    def test_get_total_value_by_user_id(self):
+        """ユーザIDを引数に合計消費量を取得できるか"""
+
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_total_value_by_user_id(self.user), 3900
+        )
+
+    def test_get_daily_average_value_per_month_by_user_id(self):
+        """ユーザIDを引数に月別に1日あたりの平均消費量を取得できるか"""
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_daily_average_value_per_month_by_user_id(
+                self.user
+            ),
+            {
+                "2016-07": 300,
+                "2016-08": 300,
+                "2016-09": 300,
+                "2016-10": 300,
+                "2016-11": 300,
+                "2016-12": 300,
+            },
+        )
