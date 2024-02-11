@@ -43,15 +43,13 @@ class ConsumptionRepository:
         return formatted_dates
 
     @staticmethod
-    def get_total_value_per_month():
-        """月別消費量を取得
+    def calc_total_value_per_month(consumption_qs):
+        """Pandasを利用して、Consumptionクラスのクエリセットから月別消費量を計算する
         引数
-            なし
+            consumption_qs: datetime と value の値を持つConsumptionクラスのクエリセット
         戻り値:
             %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに使用量の合計値をもつdict型データ
         """
-        consumption_qs = Consumption.objects.all().values("datetime", "value")
-
         total_value_per_month = {}
 
         if consumption_qs.count():
@@ -71,15 +69,13 @@ class ConsumptionRepository:
         return total_value_per_month
 
     @staticmethod
-    def get_daily_average_value_per_month():
-        """月別1日あたりの平均消費量を取得
+    def calc_daily_average_value_per_month(consumption_qs):
+        """Pandasを利用して、Consumptionクラスのクエリセットから月別の平均消費量を計算する
         引数
-            なし
+            consumption_qs: datetime と value の値を持つConsumptionクラスのクエリセット
         戻り値:
             %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに使用量の平均消費量をもつdict型データ
         """
-        consumption_qs = Consumption.objects.all().values("datetime", "value")
-
         daily_average_value_per_month = {}
 
         if consumption_qs.count():
@@ -99,6 +95,30 @@ class ConsumptionRepository:
         return daily_average_value_per_month
 
     @staticmethod
+    def get_total_value_per_month():
+        """月別消費量を取得
+        引数
+            なし
+        戻り値:
+            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに使用量の合計値をもつdict型データ
+        """
+        consumption_qs = Consumption.objects.all().values("datetime", "value")
+
+        return ConsumptionRepository.calc_total_value_per_month(consumption_qs)
+
+    @staticmethod
+    def get_daily_average_value_per_month():
+        """月別1日あたりの平均消費量を取得
+        引数
+            なし
+        戻り値:
+            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに使用量の平均消費量をもつdict型データ
+        """
+        consumption_qs = Consumption.objects.all().values("datetime", "value")
+
+        return ConsumptionRepository.calc_daily_average_value_per_month(consumption_qs)
+
+    @staticmethod
     def get_total_value_per_month_by_user_id(user_model):
         """ユーザごとに月別消費量を取得
         引数
@@ -110,24 +130,7 @@ class ConsumptionRepository:
             "datetime", "value"
         )
 
-        total_value_per_month = {}
-
-        if consumption_qs.count():
-            consumption_df = read_frame(consumption_qs)
-
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
-                "%Y-%m"
-            )
-            consumption_df.set_index("year_month")
-
-            total_value_per_month_series = consumption_df.groupby("year_month")[
-                "value"
-            ].sum()
-
-            for year_month, total_value in total_value_per_month_series.items():
-                total_value_per_month[year_month] = total_value
-
-        return total_value_per_month
+        return ConsumptionRepository.calc_total_value_per_month(consumption_qs)
 
     @staticmethod
     def get_total_value_by_user_id(user_model):
@@ -153,20 +156,4 @@ class ConsumptionRepository:
             "datetime", "value"
         )
 
-        daily_average_value_per_month = {}
-
-        if consumption_qs.count():
-            consumption_df = read_frame(consumption_qs)
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
-                "%Y-%m"
-            )
-            consumption_df.set_index("year_month")
-
-            daily_average_value_per_month_series = consumption_df.groupby("year_month")[
-                "value"
-            ].mean()
-
-            for year_month, total_value in daily_average_value_per_month_series.items():
-                daily_average_value_per_month[year_month] = total_value
-
-        return daily_average_value_per_month
+        return ConsumptionRepository.calc_daily_average_value_per_month(consumption_qs)
