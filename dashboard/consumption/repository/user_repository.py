@@ -21,4 +21,4 @@ class UserRepository:
         戻り値:
             User.objects.all()のクエリセット
         """
-        return User.objects.all()
+        return User.objects.all().order_by("id")
