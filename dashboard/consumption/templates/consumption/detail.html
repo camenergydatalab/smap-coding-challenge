@@ -2,6 +2,15 @@
 
 {% block content %}
 <section class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'consumption:summary' %}">summary</a></li>
+      <li class="breadcrumb-item active" aria-current="page">ユーザID : {{ user.id }} の詳細ページ</li>
+    </ol>
+  </nav>
+</section>
+
+<section class="container">
   <h1>ユーザID : {{ user.id }} の詳細ページ</h1>
 </section>
 
