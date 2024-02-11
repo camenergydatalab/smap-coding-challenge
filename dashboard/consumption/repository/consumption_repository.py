@@ -55,9 +55,10 @@ class ConsumptionRepository:
         total_value_per_month = {}
 
         if consumption_qs.count():
-
             consumption_df = read_frame(consumption_qs)
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime("%Y-%m")
+            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
+                "%Y-%m"
+            )
             consumption_df.set_index("year_month")
 
             total_value_per_month_series = consumption_df.groupby("year_month")[
@@ -82,9 +83,10 @@ class ConsumptionRepository:
         daily_average_value_per_month = {}
 
         if consumption_qs.count():
-
             consumption_df = read_frame(consumption_qs)
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime("%Y-%m")
+            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
+                "%Y-%m"
+            )
             consumption_df.set_index("year_month")
 
             daily_average_value_per_month_series = consumption_df.groupby("year_month")[
@@ -111,16 +113,16 @@ class ConsumptionRepository:
         total_value_per_month = {}
 
         if consumption_qs.count():
-
             consumption_df = read_frame(consumption_qs)
 
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime("%Y-%m")
+            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
+                "%Y-%m"
+            )
             consumption_df.set_index("year_month")
 
             total_value_per_month_series = consumption_df.groupby("year_month")[
                 "value"
             ].sum()
-
 
             for year_month, total_value in total_value_per_month_series.items():
                 total_value_per_month[year_month] = total_value
@@ -154,15 +156,15 @@ class ConsumptionRepository:
         daily_average_value_per_month = {}
 
         if consumption_qs.count():
-
             consumption_df = read_frame(consumption_qs)
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime("%Y-%m")
+            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
+                "%Y-%m"
+            )
             consumption_df.set_index("year_month")
 
             daily_average_value_per_month_series = consumption_df.groupby("year_month")[
                 "value"
             ].mean()
-
 
             for year_month, total_value in daily_average_value_per_month_series.items():
                 daily_average_value_per_month[year_month] = total_value
