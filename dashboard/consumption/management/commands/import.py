@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import csv
+import logging
 import os
 import sys
 
@@ -21,12 +22,14 @@ from ...repository.consumption_repository import ConsumptionRepository
 from ...repository.user_repository import UserRepository
 
 
+logger = logging.getLogger(__name__)
+
 class Command(BaseCommand):
     help = "import data"
 
     def init(self):
         """初期化"""
-        print("=== 初期化 開始 ===")
+        logger.info("### 初期化 開始 ###")
         Consumption.objects.all().delete()
         User.objects.all().delete()
         Area.objects.all().delete()
@@ -44,20 +47,22 @@ class Command(BaseCommand):
             tariff_model = Tariff.objects.create(plan=tariff[1])
             self.tariffs[tariff_model.plan] = tariff_model
 
-        print("=== 初期化 終了 ===")
+        logger.info("### 初期化 終了 ###")
 
     def preprocess_consumption_data(self):
         """消費データの前処理を行う"""
-        print("=== 消費データの前処理 開始 ===")
+        logger.info("### 消費データの前処理 開始 ###")
+
         processor = ConsumptionCSVDataProcessor(
             CONSUMPTION_DIR, PREPROCESSED_CONSUMPTION_DIR
         )
         processor.exec()
-        print("=== 消費データの前処理 終了 ===")
+
+        logger.info("### 消費データの前処理 終了 ###")
 
     def validate_user_data(self):
         """ユーザデータの入力チェック"""
-        print("=== ユーザデータの入力チェック 開始 ===")
+        logger.info("### ユーザデータの入力チェック 開始 ###")
 
         self.users = []
         error_flag = False
@@ -97,21 +102,21 @@ class Command(BaseCommand):
                     )
                 else:
                     error_flag = True
-                    print(f"{count}行目にエラー発生")
+                    logger.info(f"[{count}行目にエラー発生]")
                     for key in form.errors:
                         message = form.errors[key].as_text()
-                        print(f"{key} : {message}")
+                        logger.info(f"  {key} : {message}")
 
                 count += 1
 
-        print("=== ユーザデータの入力チェック 終了 ===")
+        logger.info("### ユーザデータの入力チェック 終了 ###")
 
         if error_flag:
             sys.exit()
 
     def validate_consumption_data(self):
         """消費データの入力チェック"""
-        print("=== 消費データの入力チェック 開始 ===")
+        logger.info("### 消費データの入力チェック 開始 ###")
 
         error_flag = False
 
@@ -138,27 +143,27 @@ class Command(BaseCommand):
 
                     if not form.is_valid():
                         error_flag = True
-                        print(f"{file_name} {count}行目にエラー発生")
+                        logger.info(f"[{file_name} {count}行目にエラー発生]")
                         for key in form.errors:
                             message = form.errors[key].as_text()
-                            print(f"{key} : {message}")
+                            logger.info(f"  {key} : {message}")
 
                     count += 1
 
-        print("=== 消費データの入力チェック 終了 ===")
+        logger.info("### 消費データの入力チェック 終了 ###")
 
         if error_flag:
             sys.exit()
 
     def bulk_insert_user(self):
         """ユーザデータに対して、バルクインサートを行う"""
-        print("=== ユーザデータ バルクインサート 開始 ===")
+        logger.info("### ユーザデータ バルクインサート 開始 ###")
         UserRepository.bulk_insert(self.users)
-        print("=== ユーザデータ バルクインサート 終了 ===")
+        logger.info("### ユーザデータ バルクインサート 終了 ###")
 
     def bulk_insert_consumption_data(self):
         """消費データに対して、1000件でバルクインサートを行う"""
-        print("=== 消費データ バルクインサート 開始 ===")
+        logger.info("### 消費データ バルクインサート 開始 ###")
         for user in UserRepository.get_all():
             file_path = os.path.join(PREPROCESSED_CONSUMPTION_DIR, str(user) + ".csv")
             chunked_df = pd.read_csv(file_path, chunksize=1000)
@@ -178,11 +183,12 @@ class Command(BaseCommand):
                     )
 
                 ConsumptionRepository.bulk_insert(consumption_datas)
-        print("=== 消費データ バルクインサート 終了 ===")
+        logger.info("### 消費データ バルクインサート 終了 ###")
 
     def delete_preprocess_consumption_csv_file(self):
         """前処理を施した消費CSVファイルの削除"""
-        print("=== 前処理を施した消費CSVファイルの削除 開始 ===")
+        logger.info("### 前処理を施した消費CSVファイルの削除 開始 ###")
+
         preprocessed_csv_files = os.listdir(PREPROCESSED_CONSUMPTION_DIR)
 
         for file_name in preprocessed_csv_files:
@@ -192,7 +198,7 @@ class Command(BaseCommand):
             file_path = os.path.join(PREPROCESSED_CONSUMPTION_DIR, file_name)
             os.remove(file_path)
 
-        print("=== 前処理を施した消費CSVファイルの削除 終了 ===")
+        logger.info("### 前処理を施した消費CSVファイルの削除 終了 ###")
 
     def handle(self, *args, **options):
         self.init()
@@ -206,13 +212,13 @@ class Command(BaseCommand):
         try:
             self.bulk_insert_user()
         except IntegrityError:
-            print("ユーザ登録にて、ユニーク制約違反が発生しました。")
+            logger.info("### ユーザ登録にて、ユニーク制約違反が発生しました。###")
             sys.exit()
 
         try:
             self.bulk_insert_consumption_data()
         except IntegrityError:
-            print("消費データにて、ユニーク制約違反が発生しました。")
+            logger.info("### 消費データにて、ユニーク制約違反が発生しました。###")
             sys.exit()
 
         self.delete_preprocess_consumption_csv_file()
