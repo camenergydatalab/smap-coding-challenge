@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ..models import Area, Consumption, Tariff, User
+from ..models import Area, Tariff, User
 
 
 # Create your tests here.

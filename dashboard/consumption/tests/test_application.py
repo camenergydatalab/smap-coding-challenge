@@ -33,7 +33,6 @@ class ConsumptionCSVDataProcessorTest(TestCase):
         self.assertEqual(df.loc["2016-07-15 01:30:00"]["consumption"], 10.0)
 
     def tearDown(self):
-
         csv_files = os.listdir(TEST_PREPROCESSED_CONSUMPTION_DIR)
 
         for file_name in csv_files:

@@ -21,8 +21,8 @@ from ...models import Area, Consumption, Tariff, User
 from ...repository.consumption_repository import ConsumptionRepository
 from ...repository.user_repository import UserRepository
 
-
 logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = "import data"

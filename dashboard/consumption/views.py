@@ -12,7 +12,6 @@ from .repository.user_repository import UserRepository
 
 # Create your views here.
 def summary(request):
-
     users = UserRepository.get_all()
 
     # 集計期間の取得
@@ -25,7 +24,6 @@ def summary(request):
     daily_average_value_chart_datasets = []
 
     if total_period_months.count:
-
         # 月別消費量合計
         total_value_per_month = ConsumptionRepository.get_total_value_per_month()
 
@@ -71,7 +69,6 @@ def summary(request):
 
 
 def detail(request, user_id):
-
     user = get_object_or_404(User, pk=user_id)
 
     # 集計期間の取得
@@ -84,10 +81,9 @@ def detail(request, user_id):
     daily_average_value_chart_datasets = []
 
     if total_period_months.count:
-
         # ユーザごとの月別消費量合計
-        total_value_per_month = ConsumptionRepository.get_total_value_per_month_by_user_id(
-            user
+        total_value_per_month = (
+            ConsumptionRepository.get_total_value_per_month_by_user_id(user)
         )
 
         total_value_chart_datasets.append(

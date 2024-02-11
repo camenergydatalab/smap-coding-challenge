@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import pandas as pd
 from django.db.models import Sum
-from django.db.models.functions import TruncMonth, TruncDay
+from django.db.models.functions import TruncDay, TruncMonth
 from django_pandas.io import read_frame
 
 from ..models import Consumption
@@ -45,13 +44,12 @@ class ConsumptionRepository:
         }
 
         if consumption_qs.count():
-
             start_day = consumption_qs.first()
             end_day = consumption_qs.last()
 
             formatted_days = {
-                "start": start_day['day'].strftime("%Y-%m-%d"),
-                "end": end_day['day'].strftime("%Y-%m-%d"),
+                "start": start_day["day"].strftime("%Y-%m-%d"),
+                "end": end_day["day"].strftime("%Y-%m-%d"),
             }
 
         return formatted_days
