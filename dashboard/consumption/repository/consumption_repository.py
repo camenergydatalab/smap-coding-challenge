@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import pandas as pd
 from django.db.models import Sum
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncMonth, TruncDay
 from django_pandas.io import read_frame
 
 from ..models import Consumption
@@ -22,23 +22,58 @@ class ConsumptionRepository:
             Consumption.objects.bulk_create(consumption_models)
 
     @staticmethod
+    def get_period_start_end_day():
+        """集計期間の開始日と終了日を返す
+        引数:
+            なし
+        戻り値:
+            以下の形式のDict型データ
+            {
+                'start': YYYY-MM-DD,
+                'end': YYYY-MM-DD,
+            }
+        """
+        consumption_qs = (
+            Consumption.objects.distinct()
+            .annotate(day=TruncDay("datetime"))
+            .values("day")
+        )
+
+        formatted_days = {
+            "start": "",
+            "end": "",
+        }
+
+        if consumption_qs.count():
+
+            start_day = consumption_qs.first()
+            end_day = consumption_qs.last()
+
+            formatted_days = {
+                "start": start_day['day'].strftime("%Y-%m-%d"),
+                "end": end_day['day'].strftime("%Y-%m-%d"),
+            }
+
+        return formatted_days
+
+    @staticmethod
     def get_total_period_months():
-        """全集計期間月を取得しリストで返却する
+        """全集計期間月を取得しリストで返す
         引数:
             なし
         戻り値:
             %Y-%m形式にフォーマットした年月文字列のリスト
         """
-        consumption_queryset = (
+        consumption_qs = (
             Consumption.objects.distinct()
-            .annotate(month_year=TruncMonth("datetime"))
-            .values("month_year")
+            .annotate(year_month=TruncMonth("datetime"))
+            .values("year_month")
         )
 
         formatted_dates = []
 
-        for consumption in consumption_queryset:
-            formatted_dates.append(consumption["month_year"].strftime("%Y-%m"))
+        for consumption in consumption_qs:
+            formatted_dates.append(consumption["year_month"].strftime("%Y-%m"))
 
         return formatted_dates
 

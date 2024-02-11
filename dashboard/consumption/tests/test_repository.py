@@ -98,6 +98,18 @@ class ConsumptionRepositoryTest(TestCase):
 
         self.assertEqual(Consumption.objects.all().count(), 3)
 
+    def test_get_period_start_end_day(self):
+        """集計期間の開始日と終了日を取得できるか"""
+        self.set_test_data()
+
+        self.assertEqual(
+            ConsumptionRepository.get_period_start_end_day(),
+            {
+                "start": "2016-07-01",
+                "end": "2016-12-02",
+            },
+        )
+
     def test_get_total_period_months(self):
         """全集計期間月をリストで取得できるか"""
 
