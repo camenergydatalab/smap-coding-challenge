@@ -10,15 +10,6 @@ class ConsumptionCSVDataProcessor:
         self.csv_dir = csv_dir
         self.preprocessed_csv_dir = preprocessed_csv_dir
 
-    def __load(self):
-        pass
-
-    def __deduplicate(self):
-        pass
-
-    def __complete_missing_datetimes(self):
-        pass
-
     def exec(self):
         csv_files = os.listdir(self.csv_dir)
 
