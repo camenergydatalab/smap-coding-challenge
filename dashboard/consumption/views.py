@@ -1,18 +1,117 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+import json
+
+from django.shortcuts import get_object_or_404, render
+
+from .models import User
+from .repository.consumption_repository import ConsumptionRepository
+from .repository.user_repository import UserRepository
+
 
 # Create your views here.
-
-
 def summary(request):
-    context = {
-        "message": "Hello!",
+    # 集計期間の取得
+    labels = ConsumptionRepository.get_total_period_months()
+
+    users = UserRepository.get_all()
+
+    user_table_datas = []
+    total_value_chart_datasets = []
+    daily_average_value_chart_datasets = []
+
+    # 月別消費量合計
+    total_value_per_month = ConsumptionRepository.get_total_value_per_month()
+
+    total_value_chart_datasets.append(
+        {
+            "label": "月別 消費量合計",
+            "data": list(map(str, list(total_value_per_month.values()))),
+            "borderWidth": 2,
+        }
+    )
+
+    # 月別1日あたりの平均消費量
+    daily_average_value_per_month = (
+        ConsumptionRepository.get_daily_average_value_per_month()
+    )
+
+    daily_average_value_chart_datasets.append(
+        {
+            "label": "月別 1日あたりの平均消費量",
+            "data": list(map(str, list(daily_average_value_per_month.values()))),
+            "borderWidth": 2,
+        }
+    )
+
+    total_value_chart_data = {
+        "labels": labels,
+        "datasets": total_value_chart_datasets,
     }
+
+    daily_average_value_chart_data = {
+        "labels": labels,
+        "datasets": daily_average_value_chart_datasets,
+    }
+
+    context = {
+        "users": users,
+        "total_value_chart_data": json.dumps(total_value_chart_data),
+        "daily_average_value_chart_data": json.dumps(daily_average_value_chart_data),
+    }
+
     return render(request, "consumption/summary.html", context)
 
 
-def detail(request):
-    context = {}
+def detail(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+
+    labels = ConsumptionRepository.get_total_period_months()
+
+    total_value_chart_datasets = []
+    daily_average_value_chart_datasets = []
+
+    # ユーザごとの月別消費量合計
+    total_value_per_month = ConsumptionRepository.get_total_value_per_month_by_user_id(
+        user
+    )
+
+    total_value_chart_datasets.append(
+        {
+            "label": "ユーザID : " + str(user),
+            "data": list(map(str, list(total_value_per_month.values()))),
+            "borderWidth": 2,
+        }
+    )
+
+    # ユーザごとの1日あたりの平均消費量
+    daily_average_value_per_month = (
+        ConsumptionRepository.get_daily_average_value_per_month_by_user_id(user)
+    )
+
+    daily_average_value_chart_datasets.append(
+        {
+            "label": "ユーザID : " + str(user),
+            "data": list(map(str, list(daily_average_value_per_month.values()))),
+            "borderWidth": 2,
+        }
+    )
+
+    total_value_chart_data = {
+        "labels": labels,
+        "datasets": total_value_chart_datasets,
+    }
+
+    daily_average_value_chart_data = {
+        "labels": labels,
+        "datasets": daily_average_value_chart_datasets,
+    }
+
+    context = {
+        "user": user,
+        "total_value_chart_data": json.dumps(total_value_chart_data),
+        "daily_average_value_chart_data": json.dumps(daily_average_value_chart_data),
+    }
+
     return render(request, "consumption/detail.html", context)
