@@ -29,7 +29,7 @@
     <tbody>
       {% for user in users %}
       <tr>
-        <th><a href="/detail/{{ user.id }}/">{{ user.id }}</a></th>
+        <th><a href="{% url 'consumption:detail' user.id %}">{{ user.id }}</a></th>
         <th>{{ user.area }}</th>
         <td>{{ user.tariff }}</td>
       </tr>

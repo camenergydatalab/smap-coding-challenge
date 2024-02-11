@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.test import Client, TestCase
+from django.urls import reverse
 
 from ..models import Area, Consumption, Tariff, User
 
@@ -11,12 +12,12 @@ class SummaryViewTests(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_top_path(self):
-        response = self.client.get("/")
+    def test_index_path(self):
+        response = self.client.get(reverse("consumption:index"))
         self.assertEqual(response.status_code, 200)
 
     def test_summary_path(self):
-        response = self.client.get("/summary/")
+        response = self.client.get(reverse("consumption:summary"))
         self.assertEqual(response.status_code, 200)
 
 
@@ -29,5 +30,7 @@ class DetailViewTests(TestCase):
         self.client = Client()
 
     def test_detail_path(self):
-        response = self.client.get("/detail/" + str(self.user.id) + "/")
+        response = self.client.get(
+            reverse("consumption:detail", kwargs=dict(user_id=self.user.id))
+        )
         self.assertEqual(response.status_code, 200)
