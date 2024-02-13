@@ -48,6 +48,7 @@ class ConsumptionRepositoryTest(TestCase):
         self.area = Area.objects.create(name="a1")
         self.tariff = Tariff.objects.create(plan="t1")
         self.user = User.objects.create(id=3000, area=self.area, tariff=self.tariff)
+        self.user2 = User.objects.create(id=3001, area=self.area, tariff=self.tariff)
 
     def set_test_data(self):
         Consumption.objects.all().delete()
@@ -71,6 +72,12 @@ class ConsumptionRepositoryTest(TestCase):
         for d in test_datetimes:
             Consumption.objects.create(
                 user=self.user,
+                datetime=d,
+                value=300.0,
+            )
+
+            Consumption.objects.create(
+                user=self.user2,
                 datetime=d,
                 value=300.0,
             )
@@ -135,12 +142,12 @@ class ConsumptionRepositoryTest(TestCase):
         self.assertEqual(
             ConsumptionRepository.get_total_value_per_month(),
             {
-                "2016-07": 900,
-                "2016-08": 600,
-                "2016-09": 600,
-                "2016-10": 600,
-                "2016-11": 600,
-                "2016-12": 600,
+                "2016-07": 1800,
+                "2016-08": 1200,
+                "2016-09": 1200,
+                "2016-10": 1200,
+                "2016-11": 1200,
+                "2016-12": 1200,
             },
         )
 
@@ -151,12 +158,12 @@ class ConsumptionRepositoryTest(TestCase):
         self.assertEqual(
             ConsumptionRepository.get_daily_average_value_per_month(),
             {
-                "2016-07": 300,
-                "2016-08": 300,
-                "2016-09": 300,
-                "2016-10": 300,
-                "2016-11": 300,
-                "2016-12": 300,
+                "2016-07": 900,
+                "2016-08": 600,
+                "2016-09": 600,
+                "2016-10": 600,
+                "2016-11": 600,
+                "2016-12": 600,
             },
         )
 
@@ -195,7 +202,7 @@ class ConsumptionRepositoryTest(TestCase):
                 self.user
             ),
             {
-                "2016-07": 300,
+                "2016-07": 450,
                 "2016-08": 300,
                 "2016-09": 300,
                 "2016-10": 300,
