@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import pandas as pd
 from django.db.models import Sum
 from django.db.models.functions import TruncDay, TruncMonth
 from django_pandas.io import read_frame
@@ -90,7 +91,6 @@ class ConsumptionRepository:
             consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
                 "%Y-%m"
             )
-            consumption_df.set_index("year_month")
 
             total_value_per_month_series = consumption_df.groupby("year_month")[
                 "value"
@@ -103,24 +103,30 @@ class ConsumptionRepository:
 
     @staticmethod
     def calc_daily_average_value_per_month(consumption_qs):
-        """Pandasを利用して、Consumptionクラスのクエリセットから月別の平均消費量を計算する
+        """Pandasを利用して、Consumptionクラスのクエリセットから月別の1日あたりの平均消費量を計算する
         引数
             consumption_qs: datetime と value の値を持つConsumptionクラスのクエリセット
         戻り値:
-            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに使用量の平均消費量をもつdict型データ
+            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに1日あたりの平均消費量をもつdict型データ
         """
         daily_average_value_per_month = {}
 
         if consumption_qs.count():
             consumption_df = read_frame(consumption_qs)
-            consumption_df["year_month"] = consumption_df["datetime"].dt.strftime(
-                "%Y-%m"
-            )
-            consumption_df.set_index("year_month")
+            consumption_df["date"] = consumption_df["datetime"].dt.date
 
-            daily_average_value_per_month_series = consumption_df.groupby("year_month")[
-                "value"
-            ].mean()
+            total_value_per_month_series = consumption_df.groupby("date")["value"].sum()
+
+            # Series to Dataframe
+            total_value_per_month_df = total_value_per_month_series.reset_index()
+
+            total_value_per_month_df["year_month"] = pd.to_datetime(
+                total_value_per_month_df["date"]
+            ).dt.strftime("%Y-%m")
+
+            daily_average_value_per_month_series = total_value_per_month_df.groupby(
+                "year_month"
+            )["value"].mean()
 
             for year_month, total_value in daily_average_value_per_month_series.items():
                 daily_average_value_per_month[year_month] = total_value
