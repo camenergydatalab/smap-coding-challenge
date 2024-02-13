@@ -42,7 +42,7 @@ def summary(request):
 
         daily_average_value_chart_datasets.append(
             {
-                "label": "月別 1日あたりの平均消費量",
+                "label": "月別 1日あたりの総消費量の平均値",
                 "data": list(map(str, list(daily_average_value_per_month.values()))),
                 "borderWidth": 2,
             }

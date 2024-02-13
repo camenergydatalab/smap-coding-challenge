@@ -103,11 +103,11 @@ class ConsumptionRepository:
 
     @staticmethod
     def calc_daily_average_value_per_month(consumption_qs):
-        """Pandasを利用して、Consumptionクラスのクエリセットから月別の1日あたりの平均消費量を計算する
+        """Pandasを利用して、Consumptionクラスのクエリセットから月別の1日あたりの総消費量の平均値を計算する
         引数
             consumption_qs: datetime と value の値を持つConsumptionクラスのクエリセット
         戻り値:
-            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに1日あたりの平均消費量をもつdict型データ
+            %Y-%m形式にフォーマットした年月文字列をKeyとして、valueに1日あたりの総消費量の平均値をもつdict型データ
         """
         daily_average_value_per_month = {}
 
