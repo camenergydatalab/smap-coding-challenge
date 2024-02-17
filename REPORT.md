@@ -34,7 +34,11 @@ Chrome
 ```bash
 $ pytest --ds=dashboard.settings
 ```
+また、github actionsでCIが回るようにしました。
 
+`feature/challenge1`ブランチにpushされるたびにactionsが走ってpytestが実行されます。
+
+https://github.com/yoshiichn/smap-coding-challenge/actions
 # トレードオフ
 ## pythonのバージョン
 pythonのバージョンが古く型を記入する際に使えない記法があったのでPythonバージョンのアップデートが必要だと思いました。
