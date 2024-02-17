@@ -62,7 +62,7 @@ def detail(request):
     df["date"] = pd.to_datetime(df["date"])
     df = df.set_index("date")
     monthly_data = []
-    for m, row in df.resample("ME").sum().iterrows():
+    for m, row in df.resample("M").sum().iterrows():
         monthly_data.append({"month": m.strftime("%Y-%m"), "total_sum": row["total"]})
     plot_data = list(consumptions.values_list("date", "total"))
     dates, totals = [list(tup) for tup in zip(*plot_data)]
