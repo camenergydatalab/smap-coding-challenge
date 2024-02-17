@@ -5,4 +5,5 @@ urlpatterns = [
     path("", views.summary, name="summary"),
     path("summary/", views.summary, name="summary"),
     path("detail/", views.detail, name="detail"),
+    path("summary/detail/", views.detail, name="detail"),
 ]
