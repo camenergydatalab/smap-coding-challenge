@@ -1,5 +1,33 @@
 {% extends 'consumption/layout.html' %}
-
 {% block content %}
-
+<h1>ユーザ:{{user_id}}のエネルギー消費量</h1>
+<div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>月</th>
+              <th>合計エネルギー消費量(Wh)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in monthly_data %}
+            <tr>
+              <td>{{ d.month }}</td>
+              <td>{{ d.total_sum }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <meta charset="UTF-8">
+  <title>日ごとのエネルギー総消費量</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <h1>日ごとのエネルギー総消費量</h1>
+  {% autoescape off %}
+  {{ graph }}
+  {% endautoescape %}
 {% endblock %}
