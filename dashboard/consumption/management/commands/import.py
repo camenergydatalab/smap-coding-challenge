@@ -224,9 +224,7 @@ class Command(BaseCommand):
                     logger.error("### 消費データにて、ユニーク制約違反が発生しました。###")
                     raise
 
-                raise IntegrityError
-
         except IntegrityError:
-            logger.info("### トランザクション中にエラーが発生しました。###")
+            logger.error("### トランザクション中にエラーが発生しました。###")
 
         self.delete_preprocess_consumption_csv_file()
