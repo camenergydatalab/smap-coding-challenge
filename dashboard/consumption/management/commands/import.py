@@ -8,6 +8,7 @@ import sys
 
 import pandas as pd
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from django.db.utils import IntegrityError
 from django.utils import timezone
 
@@ -210,15 +211,20 @@ class Command(BaseCommand):
         self.validate_consumption_data()
 
         try:
-            self.bulk_insert_user()
-        except IntegrityError:
-            logger.info("### ユーザ登録にて、ユニーク制約違反が発生しました。###")
-            sys.exit()
+            with transaction.atomic():
+                try:
+                    self.bulk_insert_user()
+                except IntegrityError:
+                    logger.error("### ユーザ登録にて、ユニーク制約違反が発生しました。###")
+                    raise
 
-        try:
-            self.bulk_insert_consumption_data()
+                try:
+                    self.bulk_insert_consumption_data()
+                except IntegrityError:
+                    logger.error("### 消費データにて、ユニーク制約違反が発生しました。###")
+                    raise
+
         except IntegrityError:
-            logger.info("### 消費データにて、ユニーク制約違反が発生しました。###")
-            sys.exit()
+            logger.error("### トランザクション中にエラーが発生しました。###")
 
         self.delete_preprocess_consumption_csv_file()
