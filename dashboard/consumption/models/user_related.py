@@ -16,7 +16,7 @@ class User(TimestampedModel):
         (WITHDRAWN, "withdrawn"),
     )
 
-    user_id = models.IntegerField(verbose_name="ユーザID", unique=True)
+    user_id = models.CharField(max_length=20, unique=True)
     user_status = models.CharField(max_length=20, choices=USER_STATUS, default=CONTINUING)
 
 
