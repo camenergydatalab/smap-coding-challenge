@@ -2,7 +2,7 @@ from django.db import models
 from model_utils import Choices
 from .base import TimestampedModel
 from .master import Area, TariffPlan
-from consumption.utils.time_utils import get_local_time
+from consumption.utils.time_utils import get_local_now_time
 
 
 class User(TimestampedModel):
@@ -39,7 +39,7 @@ class UserContractHistory(TimestampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     tariff_plan = models.ForeignKey(TariffPlan, on_delete=models.CASCADE)
-    contract_start_at = models.DateTimeField(default=get_local_time)
+    contract_start_at = models.DateTimeField(default=get_local_now_time)
     contract_end_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:

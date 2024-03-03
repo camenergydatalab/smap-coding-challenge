@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('contract_start_at', models.DateTimeField(default=consumption.utils.time_utils.get_local_time)),
+                ('contract_start_at', models.DateTimeField(default=consumption.utils.time_utils.get_local_now_time)),
                 ('contract_end_at', models.DateTimeField(blank=True, null=True)),
                 ('area', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='consumption.Area')),
                 ('tariff_plan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='consumption.TariffPlan')),

@@ -1,5 +1,5 @@
 from django.utils import timezone
 
 
-def get_local_time():
+def get_local_now_time():
     return timezone.localtime(timezone.now())
