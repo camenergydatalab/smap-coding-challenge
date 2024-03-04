@@ -1,5 +1,6 @@
 import logging
 import glob
+import shutil
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.conf import settings
@@ -23,6 +24,7 @@ class Command(BaseCommand):
     DATA_FILE_PATH = f'{Path(settings.BASE_DIR).parent}/data'
     AREA_DICT = Area.get_area_dict()
     TARIFF_PLAN_DICT = TariffPlan.get_tariff_plan_dict()
+    IMPORTED_FILE_PATH = f"{DATA_FILE_PATH}/completion/{get_local_now_time().date()}"
 
     @transaction.atomic
     def import_user_data(self):
@@ -78,7 +80,8 @@ class Command(BaseCommand):
 
         UserContractHistory.objects.bulk_create(new_user_contract_history_list)
         UserContractHistory.objects.bulk_update(update_user_contract_history_list, fields=["contract_end_at"])
-
+        os.makedirs(self.IMPORTED_FILE_PATH, exist_ok=True)
+        shutil.move(user_data_file, f"{self.IMPORTED_FILE_PATH}/user_data.csv")
         logging.info("import_user_data has finished.")
 
 
@@ -135,6 +138,7 @@ class Command(BaseCommand):
         UserConsumptionHistory.objects.bulk_create(
             [UserConsumptionHistory(**data) for data in create_user_consumptionHistory_list]
         )
+        shutil.move(f"{self.DATA_FILE_PATH}/consumption", f"{self.DATA_FILE_PATH}/completion/{get_local_now_time().date()}")
 
     def cache_summary_data(self):
         # TODO 本来であれば本日から1か月前までを対象期間とするが、データの関係上1か月間の期間はハードコーディングする
