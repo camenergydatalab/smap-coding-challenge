@@ -1,15 +1,21 @@
+import logging
+import glob
 from django.core.management.base import BaseCommand
 from django.db import transaction
-import logging
 from django.conf import settings
 from pathlib import Path
-import glob
 import pandas as pd
 import os
 from consumption.models.master import Area, TariffPlan
 from consumption.models.user_related import User, UserConsumptionHistory, UserContractHistory
 from consumption.utils.time_utils import get_local_now_time
 from django_pandas.io import read_frame
+from consumption.models.user_related import User, UserConsumptionHistory, UserContractHistory
+from django.core.cache import cache
+import jpholiday
+import datetime
+from consumption.consts import CONSUMPTION_CACHE_KEY
+
 
 class Command(BaseCommand):
     help = 'Import data from CSV to DB'
@@ -23,12 +29,13 @@ class Command(BaseCommand):
         logging.info("import_user_data has started.")
 
         user_data_file = f'{self.DATA_FILE_PATH}/user_data.csv'
-        df = pd.read_csv(user_data_file)
 
         # ファイルが存在しなかったら処理しない
         if not os.path.exists(user_data_file):
             logging.info("user_data.csv does not existed.")
             return
+
+        df = pd.read_csv(user_data_file)
 
         # DBには登録されているが、CSVファイルに存在しないユーザはステータスを退会に変更する
         user_ids_set_from_csv = set(df["id"].dropna())
@@ -129,12 +136,40 @@ class Command(BaseCommand):
             [UserConsumptionHistory(**data) for data in create_user_consumptionHistory_list]
         )
 
+    def cache_summary_data(self):
+        # TODO 本来であれば本日から1か月前までを対象期間とするが、データの関係上1か月間の期間はハードコーディングする
+        start_date=datetime.date(2016, 12, 1)
+        end_date=datetime.date(2016, 12, 31)
+
+        # User関連データを連結したデータフレームを作成する
+        user_data = User.objects.values('user_id').filter()
+        consumption_history_data = UserConsumptionHistory.objects.values('user__user_id', 'measurement_at', 'consumption_amount').filter(measurement_at__range=(start_date, end_date))
+        contract_history_data = UserContractHistory.objects.values('user__user_id', "area__area_name", "tariff_plan","contract_start_at", "contract_end_at")
+        user_df = read_frame(user_data)
+        consumption_history_df = read_frame(consumption_history_data)
+        contract_history_df = read_frame(contract_history_data)
+        merged_df = pd.merge(contract_history_df, user_df, left_on='user__user_id', right_on='user_id')
+        merged_df = pd.merge(merged_df, consumption_history_df, on='user__user_id')
+        consumption_result_df = merged_df[['user_id', 'area__area_name', 'tariff_plan',"contract_start_at", "contract_end_at", 'measurement_at', 'consumption_amount']]
+        consumption_result_df['measurement_at'] = consumption_result_df['measurement_at'].dt.tz_convert(settings.TIME_ZONE)
+
+        # 平日か休日(祝日含む)か判定
+        holidays = [date[0] for date in jpholiday.between(start_date, end_date)]
+        consumption_result_df['is_holiday'] = (consumption_result_df['measurement_at'].dt.dayofweek >= 5) | (consumption_result_df['measurement_at'].isin(holidays))
+
+        # 時間帯判別処理
+        # 深夜（0:00~5:00）、 朝（05:00~10:00）, 昼（10:00~15:00）, 夕方（15:00~19:00）, 夜（19:00~24:00）
+        bins = [-1, 5, 10, 15, 19, 25]
+        labels = ['late_night', 'morning', 'daytime', 'evening', 'night']
+        consumption_result_df['time_of_day'] = pd.cut(consumption_result_df['measurement_at'].dt.hour, bins=bins, labels=labels, right=False)
+        cache.set(CONSUMPTION_CACHE_KEY, consumption_result_df, timeout=60*60)
 
 
     def handle(self, *args, **options) -> str:
         try:
             self.import_user_data()
             self.import_consumption_data()
+            self.cache_summary_data()
             return "0"
         except Exception as e:
             logging.error(e)
