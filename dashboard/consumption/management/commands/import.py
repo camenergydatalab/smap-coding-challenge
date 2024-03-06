@@ -54,6 +54,7 @@ class Command(BaseCommand):
             User.objects.bulk_update(withdrawn_user, fields=["user_status"])
             logging.info(f"user_ids {list(withdrawn_user_df['user_id'])} have withdrawn.")
 
+        update_user_list = []
         new_user_contract_history_list = []
         update_user_contract_history_list = []
         for index, row in df.iterrows():
@@ -64,26 +65,37 @@ class Command(BaseCommand):
                 continue
 
             user_id = row["id"]
-            area = self.AREA_DICT.get(row["area"])
-            tariff_plan = self.TARIFF_PLAN_DICT.get(row["tariff"])
+            area = Area.get_area_dict().get(row["area"])
+            tariff_plan = TariffPlan.get_tariff_plan_dict().get(row["tariff"])
+
             # エリア、料金プランのマスタテーブルに存在しない値の場合処理を行わない
             if not area or not tariff_plan:
-                logging.info(f"{user_id} : area or tariff_plan mismatch. Skipping processing.")
+                logging.info(f"user_id {user_id} : area or tariff_plan mismatch. Skipping processing.")
                 continue
 
             user, created = User.objects.get_or_create(user_id=user_id)
+            # ユーザのステータスが退会済みになっていたら継続に戻す
+            if user.user_status == User.USER_STATUS.withdrawn:
+                user.user_status = User.USER_STATUS.continuing
+                update_user_list.append(user)
+                logging.info(f"user_id {user_id} status change to 'continuing")
+
             if created:
                 # DBに登録されていないユーザの場合、新規登録処理を行う
-                self.append_new_user_contract_history_list(user, area, tariff_plan, new_user_contract_history_list)
-                logging.info(f"{user_id} has created.")
+                self.append_new_user_contract_history_list(
+                    user, area, tariff_plan, new_user_contract_history_list
+                )
+                logging.info(f"user_id {user_id} is new_create_user.")
             elif not UserContractHistory.objects.filter(user=user, area=area, tariff_plan=tariff_plan).exists():
                 # ユーザID、エリア、料金プランが履歴テーブルに存在しない場合、更新処理を行う
-                self. append_update_user_contract_history_list(user, update_user_contract_history_list)
-                self.append_new_user_contract_history_list(user, area, tariff_plan, new_user_contract_history_list)
-                logging.info(f"{user_id} has updated.")
+                self.append_update_user_contract_history_list(user, update_user_contract_history_list)
+                self.append_new_user_contract_history_list(
+                    user, area, tariff_plan, new_user_contract_history_list
+                )
+                logging.info(f"user_id {user_id} is update_user.")
             else:
                 # 上記に合致しないユーザの場合処理しない
-                logging.info(f"{user_id} has no changes")
+                logging.info(f"user_id {user_id} has no changes")
                 continue
 
         UserContractHistory.objects.bulk_create(new_user_contract_history_list)
