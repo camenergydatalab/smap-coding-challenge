@@ -15,6 +15,7 @@ from consumption.models.user_related import User, UserConsumptionHistory, UserCo
 from django.core.cache import cache
 import jpholiday
 import datetime
+from django_pandas.io import read_frame
 from consumption.consts import CONSUMPTION_CACHE_KEY
 
 
@@ -40,11 +41,18 @@ class Command(BaseCommand):
         df = pd.read_csv(user_data_file)
 
         # DBには登録されているが、CSVファイルに存在しないユーザはステータスを退会に変更する
-        user_ids_set_from_csv = set(df["id"].dropna())
-        user_ids_set_from_db = set(User.objects.values_list('user_id', flat=True))
-        withdrawn_user_ids_set = user_ids_set_from_db - user_ids_set_from_csv
-        User.objects.filter(user_id__in=withdrawn_user_ids_set).update(user_status=User.USER_STATUS.withdrawn)
-        logging.info(f"{withdrawn_user_ids_set} have withdrawn.")
+        users_exclude_withdrawn = User.objects.exclude(user_status=User.USER_STATUS.withdrawn)
+        user_db_df = read_frame(users_exclude_withdrawn, fieldnames=["user_id"])
+        # ~df.isinで含まない行のみ取得する
+        withdrawn_user_df = user_db_df[~user_db_df["user_id"].isin(df["id"].astype(str))]
+        if len(withdrawn_user_df) > 0:
+            withdrawn_users = users_exclude_withdrawn.filter(user_id__in=withdrawn_user_df["user_id"])
+            withdrawn_user_list = []
+            for withdrawn_user in withdrawn_users:
+                withdrawn_user.user_status = User.USER_STATUS.withdrawn
+                withdrawn_user_list.append(withdrawn_user)
+            User.objects.bulk_update(withdrawn_user, fields=["user_status"])
+            logging.info(f"user_ids {list(withdrawn_user_df['user_id'])} have withdrawn.")
 
         new_user_contract_history_list = []
         update_user_contract_history_list = []
