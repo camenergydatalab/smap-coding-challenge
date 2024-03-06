@@ -280,12 +280,10 @@ class Command(BaseCommand):
         return user_consumption_history_list
 
     def cache_consumption_data(self):
-        """画面表示で使用する消費量データのキャッシュ処理
-        """
+        """画面表示で使用する消費量データのキャッシュ処理"""
         logging.info("cache_summary_data has started.")
         cache_consumption_data()
         logging.info("cache_summary_data has finished.")
-
 
     def handle(self, *args, **options) -> str:
         try:
