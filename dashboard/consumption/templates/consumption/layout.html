@@ -1,8 +1,36 @@
+{% load staticfiles %}
 <!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    {% block content %}{% endblock content %}
-  </body>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SMAP_CHALLENGE1</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            }
+            td, th {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+            }
+            th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+            }
+            tr:nth-child(even) {
+            background-color: #f9f9f9;
+            }
+            tr:hover {
+            background-color: #f5f5f5;
+            }
+        </style>
+    </head>
+    <body>
+        {% block content %}{% endblock content %}
+    </body>
 </html>
