@@ -39,6 +39,15 @@ class Command(BaseCommand):
             return
 
         df = pd.read_csv(user_data_file)
+        data_df = pd.read_csv(user_data_file)
+        # ログ出力用に存在しない値がある行のみのデータフレームを作成する
+        isnull_data_df = data_df[data_df.isnull().any(axis=1)]
+        if len(isnull_data_df) > 0:
+            logging.info(
+                f"file: {user_data_file} index: {list(isnull_data_df.index)} : all values are not complete. Skipping processing."
+            )
+        # 欠陥値と重複の削除
+        data_df = data_df.dropna().drop_duplicates(subset=["id"])
 
         # DBには登録されているが、CSVファイルに存在しないユーザはステータスを退会に変更する
         users_exclude_withdrawn = User.objects.exclude(user_status=User.USER_STATUS.withdrawn)
@@ -58,11 +67,6 @@ class Command(BaseCommand):
         new_user_contract_history_list = []
         update_user_contract_history_list = []
         for index, row in df.iterrows():
-            # ユーザID、エリア、料金プランの値が存在しない場合後続処理を行わない
-            # TODO 行ごとでなくても全体で存在しない値がある行を削除する処理に変更でも行けそう
-            if row.isnull().any():
-                logging.info(f"row={index+2} : all values are not complete. Skipping processing.")
-                continue
 
             user_id = row["id"]
             area = Area.get_area_dict().get(row["area"])
