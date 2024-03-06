@@ -1,8 +1,9 @@
+from consumption.utils.time_utils import get_local_now_time
 from django.db import models
 from model_utils import Choices
+
 from .base import TimestampedModel
 from .master import Area, TariffPlan
-from consumption.utils.time_utils import get_local_now_time
 
 
 class User(TimestampedModel):
@@ -28,10 +29,7 @@ class UserConsumptionHistory(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "measurement_at"],
-                name="user_consumption_history_unique"
-            ),
+            models.UniqueConstraint(fields=["user", "measurement_at"], name="user_consumption_history_unique"),
         ]
 
 
@@ -44,8 +42,5 @@ class UserContractHistory(TimestampedModel):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "area", "tariff_plan"],
-                name="user_contract_history_unique"
-            ),
+            models.UniqueConstraint(fields=["user", "area", "tariff_plan"], name="user_contract_history_unique"),
         ]
