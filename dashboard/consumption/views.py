@@ -14,6 +14,17 @@ from django.shortcuts import render
 
 
 def summary(request):
+    """集計画面の表示ビュー
+    Args:
+        request (HttpRequest): Django リクエストオブジェクト
+    Returns:
+        HttpResponse: レスポンスオブジェクト
+    Note:
+        直近1カ月のキャッシュデータからエリア、曜日、時間帯ごとに合計消費量を算出する
+    Todo:
+        変数名が検討しきれていない
+        area_〇〇_values作成処理の共通化を検討しきれていない + モジュール化したい
+    """
     # キャッシュデータが存在しない場合、キャッシュのセット処理を呼び出す
     if CONSUMPTION_CACHE_KEY not in cache:
         cache_consumption_data()
@@ -63,6 +74,18 @@ def summary(request):
 
 
 def detail(request, user_id):
+    """詳細画面の表示ビュー
+    Args:
+        request (HttpRequest): Django リクエストオブジェクト
+        user_id: 対象ユーザのユーザID
+    Returns:
+        HttpResponse: レスポンスオブジェクト
+    Note:
+        直近1カ月のキャッシュデータから対象ユーザの曜日、時間帯ごとの合計消費量を算出する
+    Todo:
+        変数名が検討しきれていない
+        area_〇〇_values作成処理の共通化を検討しきれていない + モジュール化したい
+    """
     # キャッシュデータが存在しない場合、キャッシュのセット処理を呼び出す
     if CONSUMPTION_CACHE_KEY not in cache:
         cache_consumption_data()
