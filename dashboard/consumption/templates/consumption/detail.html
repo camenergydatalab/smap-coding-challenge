@@ -1,5 +1,29 @@
 {% extends 'consumption/layout.html' %}
 
-{% block content %}
+{% load static %}
 
+{% block header %}
+<header class="py-1 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="text-center my-4">
+            <h1 class="fw-bolder">User Detail</h1>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="col-lg-8">
+    <div class="mb-4">
+        <h2>User ID: {{user_id}}</h2>
+    </div>
+    <div class="mb-4">
+        <h3>【月別消費量合計】</h3>
+        <img src="data:image/png;base64, {{ chart_1 | safe }}" alt="月別消費量" class="card-img-top">
+    </div>
+    <div class="mb-4">
+        <h3>【時間帯別平均使用量】</h3>
+        <img src="data:image/png;base64, {{ chart_2 | safe }}" alt="時間帯別平均使用量" class="card-img-top">
+    </div>
+</div>
 {% endblock %}

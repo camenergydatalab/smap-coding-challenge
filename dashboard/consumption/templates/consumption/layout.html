@@ -1,8 +1,20 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Challenge App</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
   </head>
+  {% block header %}{% endblock header %}
   <body>
-    {% block content %}{% endblock content %}
+    <div class="container">
+      <div class="row">
+        {% block content %}{% endblock content %}
+      </div>
+    </div>
   </body>
 </html>
