@@ -25,7 +25,7 @@ SECRET_KEY = '=stpmw2pq0*w(_2t4t90#j_*b$%#7q0e3jk(we#ttyp#y(#$qe'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -75,9 +75,13 @@ WSGI_APPLICATION = 'dashboard.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("SMAP_DB_NAME", "smapdb"),
+        "USER": os.getenv("SMAP_DB_USER", "smap"),
+        "PASSWORD": os.getenv("SMAP_DB_PASSWORD", "smap1234"),
+        "HOST": os.getenv("SMAP_DB_HOST", "localhost"),
+        "PORT": os.getenv("SMAP_DB_PORT", 5432),
     }
 }
 
