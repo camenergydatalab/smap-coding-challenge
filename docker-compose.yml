@@ -1,0 +1,39 @@
+services:
+  web:
+    environment: 
+        SMAP_DB_NAME: smapdb
+        SMAP_DB_USER: smap
+        SMAP_DB_PASSWORD: smap1234
+        SMAP_DB_HOST: db
+        SMAP_DB_PORT: 5432
+    build:
+      context: .
+    volumes:
+      - .:/usr/src
+    working_dir: /usr/src/dashboard
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:14.10
+    environment:
+      POSTGRES_PASSWORD: smap1234
+      POSTGRES_USER: smap
+      POSTGRES_DB: smapdb
+    command: postgres -c extra_float_digits=0
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U smap -d smapdb" ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db-data:
